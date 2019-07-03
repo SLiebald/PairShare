@@ -28,6 +28,7 @@ import com.sliebald.pairshare.utils.PreferenceUtils;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -171,32 +172,6 @@ public class Repository {
 
     }
 
-
-    /**
-     * Testing/Debugging only.
-     */
-    public void createTestExpenseOverview() {
-        String uid = getFirebaseUser().getUid();
-
-        Expense expense = new Expense();
-        expense.setUserID(uid);
-        expense.setAmount(50.1);
-        expense.setComment("This is a test expense");
-        mDb.collection(COLLECTION_KEY_EXPENSE_LISTS)
-                .document("test")
-                .collection(COLLECTION_KEY_EXPENSE)
-                .add(expense);
-        expense.setUserID(uid);
-        expense.setAmount(150.1);
-        expense.setComment("This is a second test expense");
-
-        mDb.collection(COLLECTION_KEY_EXPENSE_LISTS)
-                .document("test")
-                .collection(COLLECTION_KEY_EXPENSE)
-                .add(expense);
-
-    }
-
     /**
      * Gets a {@link Query} for the expenseLists of the user. Can be used as input to create a
      * {@link com.firebase.ui.firestore.FirestoreRecyclerAdapter} for displaying the data in a
@@ -222,7 +197,7 @@ public class Repository {
         return mDb.collection(COLLECTION_KEY_EXPENSE_LISTS)
                 .document(PreferenceUtils.getSelectedSharedExpenseListID())
                 .collection(COLLECTION_KEY_EXPENSE)
-                .orderBy(Expense.KEY_CREATED, Query.Direction.DESCENDING);
+                .orderBy("created", Query.Direction.DESCENDING);
     }
 
 
@@ -295,19 +270,23 @@ public class Repository {
      * Adds the given expense to the currently selected List. Adds the ID of the currently logged
      * in user to the logged expense.
      *
-     * @param expense  The {@link Expense} to add.
      * @param image The image to add to the expense
      * @param thumbnail The thumbnail to add to the expense.
      */
-    public void addExpense(Expense expense, Bitmap image, Bitmap thumbnail) {
+    public void addExpense(String username, Double amount, String comment, Date time, Bitmap image, Bitmap thumbnail) {
         FirebaseUser fbUser = getFirebaseUser();
-        expense.setUserID(fbUser.getUid());
+
+        String imagePath = null;
+        String thumbnailPath = null;
 
         if (image != null && thumbnail != null) {
-            expense.setImagePath(uploadImage(image, "images/" + UUID.randomUUID().toString() + ".jpeg"));
-            expense.setThumbnailPath(uploadImage(thumbnail, "thumbnails/" + UUID.randomUUID().toString() +
-                    ".jpeg"));
+            imagePath = uploadImage(image, "images/" + UUID.randomUUID().toString() + ".jpeg");
+            thumbnailPath = uploadImage(thumbnail, "thumbnails/" + UUID.randomUUID().toString() +
+                    ".jpeg");
         }
+
+        Expense expense = new Expense(fbUser.getUid(), username, amount, comment, time, imagePath,
+                thumbnailPath);
 
         String userSharerInfo = "sharerInfo." + fbUser.getUid();
         DocumentReference affectedListDocument =
@@ -325,16 +304,6 @@ public class Repository {
                 FieldValue.increment(expense.getAmount()), userSharerInfo + ".numExpenses",
                 FieldValue.increment(1));
         batch.commit();
-    }
-
-    /**
-     * Adds the given expense to the currently selected List. Adds the ID of the currently logged
-     * in user to the logged expense.
-     *
-     * @param expense The {@link Expense} to add.
-     */
-    public void addExpense(Expense expense) {
-        addExpense(expense, null, null);
     }
 
     /**
@@ -385,6 +354,7 @@ public class Repository {
                         }
                     });
     }
+
 
     /**
      * Interface for reporting results back to the caller. -1= error, 0=success

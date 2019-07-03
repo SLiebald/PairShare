@@ -11,7 +11,6 @@ import com.sliebald.pairshare.data.models.Expense;
 import com.sliebald.pairshare.utils.ImageUtils;
 
 import java.util.Calendar;
-import java.util.Objects;
 
 /**
  * Viewmodel for the {@link AddExpenseFragment}. Handling interaction with the {@link Repository}
@@ -83,12 +82,9 @@ public class AddExpenseViewModel extends ViewModel {
      * @param username Current username.
      */
     void addExpense(Double amount, String comment, String username) {
-        Expense expense = new Expense();
-        expense.setComment(comment);
-        expense.setAmount(amount);
-        expense.setUserName(username);
-        expense.setTimeOfExpense(Objects.requireNonNull(calendar.getValue()).getTime());
-        Repository.getInstance().addExpense(expense, image, thumbnail);
+        Repository.getInstance().addExpense(username, amount, comment, calendar.getValue().getTime(),
+                image,
+                thumbnail);
         clearImage();
     }
 
