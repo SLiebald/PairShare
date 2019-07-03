@@ -133,12 +133,11 @@ public class Repository {
      */
     public void checkNewUser() {
         FirebaseUser fbUser = getFirebaseUser();
-        User user = new User();
-        user.setMail(fbUser.getEmail());
+        String userName;
         if (fbUser.getDisplayName() != null && !fbUser.getDisplayName().isEmpty())
-            user.setUsername(fbUser.getDisplayName());
+            userName = fbUser.getDisplayName();
         else
-            user.setUsername(fbUser.getEmail());
+            userName = fbUser.getEmail();
         String id = fbUser.getUid();
 
         //Get the firebase cloud messaging token, then add the user or update him.
@@ -148,7 +147,8 @@ public class Repository {
         FirebaseInstanceId.getInstance().getInstanceId()
                 .addOnSuccessListener(instanceIdResult -> {
                     String token = instanceIdResult.getToken();
-                    user.setFcmToken(token);
+                    User user = new User(fbUser.getEmail().toLowerCase(), userName, token);
+
                     mDb.collection(COLLECTION_KEY_USERS).document(id).get().addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             DocumentSnapshot document = task.getResult();
@@ -215,7 +215,7 @@ public class Repository {
 
         //Get the other invited User.
         Log.d(TAG, "adding expenselist: searching for user");
-        mDb.collection(COLLECTION_KEY_USERS).whereEqualTo(User.KEY_MAIL,
+        mDb.collection(COLLECTION_KEY_USERS).whereEqualTo("mail",
                 invite.toLowerCase()).get().addOnCompleteListener(task -> {
             Log.d(TAG, "adding expenselist: found a user");
 
