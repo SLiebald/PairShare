@@ -5,6 +5,15 @@ import java.util.*
 
 /**
  * Single [Expense] that is related to an [ExpenseList] collection in firestore.
+ *
+ * @param userID The firebase ID of the [User] that created the [Expense].
+ * @param userName The username of the [User] that created the [Expense].
+ * @param amount The amount of money to add in the [Expense].
+ * @param comment The comment describing the [Expense] (optional).
+ * @param timeOfExpense Time the [Expense] took place.
+ * @param imagePath Firebase storage url for the image assigned to the [Expense] (optional).
+ * @param thumbnailPath Firebase storage url for the thumbnail image assigned to the [Expense]
+ * (optional).
  */
 data class Expense(
         val userID: String? = null,
@@ -15,6 +24,9 @@ data class Expense(
         val imagePath: String? = null,
         val thumbnailPath: String? = null
 ) {
+    /**
+     * Time the [Expense] was added. Can be different from the [timeOfExpense].
+     */
     @ServerTimestamp
     val created: Date? = null
 }
