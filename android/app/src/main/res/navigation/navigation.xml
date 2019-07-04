@@ -9,8 +9,7 @@
         android:id="@+id/addExpense_dest"
         android:name="com.sliebald.pairshare.ui.addExpense.AddExpenseFragment"
         android:label="@string/label_add_entry"
-        tools:layout="@layout/fragment_add_expense">
-    </fragment>
+        tools:layout="@layout/fragment_add_expense"></fragment>
     <fragment
         android:id="@+id/selectExpenseList_dest"
         android:name="com.sliebald.pairshare.ui.selectExpenseList.SelectExpenseListFragment"
