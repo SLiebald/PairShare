@@ -23,6 +23,7 @@ import com.sliebald.pairshare.data.models.Expense;
 import com.sliebald.pairshare.data.models.ExpenseList;
 import com.sliebald.pairshare.data.models.ExpenseSummary;
 import com.sliebald.pairshare.data.models.User;
+import com.sliebald.pairshare.utils.DB_FIELDS;
 import com.sliebald.pairshare.utils.PreferenceUtils;
 
 import java.io.ByteArrayOutputStream;
@@ -181,8 +182,9 @@ public class Repository {
      */
     public Query getExpenseListsQuery() {
         return mDb.collection(COLLECTION_KEY_EXPENSE_LISTS)
-                .whereArrayContains(ExpenseList.KEY_SHARERS, getFirebaseUser().getUid())
-                .orderBy(ExpenseList.KEY_MODIFIED);
+                .whereArrayContains(DB_FIELDS.FIELD_EXPENSE_LIST_SHARERS
+                        , getFirebaseUser().getUid())
+                .orderBy(DB_FIELDS.FIELD_EXPENSE_LIST_MODIFIED);
     }
 
     /**
@@ -197,7 +199,7 @@ public class Repository {
         return mDb.collection(COLLECTION_KEY_EXPENSE_LISTS)
                 .document(PreferenceUtils.getSelectedSharedExpenseListID())
                 .collection(COLLECTION_KEY_EXPENSE)
-                .orderBy("created", Query.Direction.DESCENDING);
+                .orderBy(DB_FIELDS.FIELD_CREATED, Query.Direction.DESCENDING);
     }
 
 
@@ -215,7 +217,7 @@ public class Repository {
 
         //Get the other invited User.
         Log.d(TAG, "adding expenselist: searching for user");
-        mDb.collection(COLLECTION_KEY_USERS).whereEqualTo("mail",
+        mDb.collection(COLLECTION_KEY_USERS).whereEqualTo(DB_FIELDS.FIELD_USER_MAIL,
                 invite.toLowerCase()).get().addOnCompleteListener(task -> {
             Log.d(TAG, "adding expenselist: found a user");
 
@@ -226,17 +228,15 @@ public class Repository {
                 FirebaseUser fbUser = getFirebaseUser();
 
                 if (!documentSnapshot.getId().equals(fbUser.getUid())) {
-                    ExpenseList expenseList = new ExpenseList();
-                    expenseList.setListName(listName);
                     List<String> sharers = new ArrayList<>(2);
                     sharers.add(fbUser.getUid());
                     sharers.add(documentSnapshot.getId());
-                    expenseList.setSharers(sharers);
 
                     Map<String, ExpenseSummary> sharerInfo = new HashMap<>();
                     sharerInfo.put(fbUser.getUid(), new ExpenseSummary());
                     sharerInfo.put(documentSnapshot.getId(), new ExpenseSummary());
-                    expenseList.setSharerInfo(sharerInfo);
+
+                    ExpenseList expenseList = new ExpenseList(listName, sharers, sharerInfo);
 
                     // Add the new expenslist to the collection and report success back.
                     Log.d(TAG, "adding expenselist: adding list");
@@ -288,7 +288,7 @@ public class Repository {
         Expense expense = new Expense(fbUser.getUid(), username, amount, comment, time, imagePath,
                 thumbnailPath);
 
-        String userSharerInfo = "sharerInfo." + fbUser.getUid();
+        String userSharerInfo = DB_FIELDS.FIELD_EXPENSE_LIST_SHARER_INFO + "." + fbUser.getUid();
         DocumentReference affectedListDocument =
                 mDb.collection(COLLECTION_KEY_EXPENSE_LISTS)
                         .document(PreferenceUtils.getSelectedSharedExpenseListID());
@@ -300,8 +300,10 @@ public class Repository {
         // expenses at the same time.
         WriteBatch batch = mDb.batch();
         batch.set(expenseDocument, expense);
-        batch.update(affectedListDocument, userSharerInfo + ".sumExpenses",
-                FieldValue.increment(expense.getAmount()), userSharerInfo + ".numExpenses",
+        batch.update(affectedListDocument,
+                userSharerInfo + "." + DB_FIELDS.FIELD_EXPENSE_LIST_SHARER_INFO_SUM_EXPENSES,
+                FieldValue.increment(expense.getAmount()),
+                userSharerInfo + "." + DB_FIELDS.FIELD_EXPENSE_LIST_SHARER_INFO_NUM_EXPENSES,
                 FieldValue.increment(1));
         batch.commit();
     }

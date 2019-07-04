@@ -14,6 +14,7 @@ import java.util.*
  * @param imagePath Firebase storage url for the image assigned to the [Expense] (optional).
  * @param thumbnailPath Firebase storage url for the thumbnail image assigned to the [Expense]
  * (optional).
+ * @constructor Creates a new [Expense]
  */
 data class Expense(
         val userID: String? = null,

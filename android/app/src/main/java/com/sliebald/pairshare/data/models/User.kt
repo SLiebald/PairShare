@@ -9,7 +9,7 @@ import java.util.*
  * @param mail The mail address of the User.
  * @param username Username of the User.
  * @param fcmToken FCM Token used for cloud notifications on events.
- * @constructor creates a new User
+ * @constructor Creates a new [User]
  */
 data class User(
         val mail: String? = null,
