@@ -11,24 +11,14 @@ import java.util.*
  * the [ExpenseSummary] for the according user.
  * @param sharers List of [User]s involved in this [ExpenseList]. Needed as firestore
  * currently cannot check the [sharerInfo] map, where the keys contain the same info.
+ * @param created  Time the [ExpenseList] was created.
+ * @param modified Time the [ExpenseList] was last modified (e.g. changed the sharerInfo).
  * @constructor Creates a new [ExpenseList]
  */
 data class ExpenseList(
         val listName: String? = null,
         val sharers: List<String>? = null,
-        val sharerInfo: Map<String, ExpenseSummary>? = null
-
-) {
-    /**
-     * Time the [ExpenseList] was created.
-     */
-    @ServerTimestamp
-    val created: Date? = null
-
-    /**
-     * Time the [ExpenseList] was last modified (e.g. changed the sharerInfo).
-     */
-    @ServerTimestamp
-    var modified: Date? = null
-
-}
+        val sharerInfo: Map<String, ExpenseSummary>? = null,
+        @ServerTimestamp val created: Date? = null,
+        @ServerTimestamp var modified: Date? = null
+)

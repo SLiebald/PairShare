@@ -241,7 +241,8 @@ object Repository {
      * @param image The image to add to the expense
      * @param thumbnail The thumbnail to add to the expense.
      */
-    fun addExpense(username: String, amount: Double?, comment: String, time: Date, image: Bitmap?, thumbnail: Bitmap?) {
+    fun addExpense(username: String, amount: Double, comment: String, time: Date, image:
+    Bitmap? = null, thumbnail: Bitmap? = null) {
 
         var imagePath: String? = null
         var thumbnailPath: String? = null
@@ -252,7 +253,7 @@ object Repository {
                     ".jpeg")
         }
 
-        val expense = Expense(fbUser.uid, username, amount!!, comment, time, imagePath,
+        val expense = Expense(fbUser.uid, username, amount, comment, time, imagePath,
                 thumbnailPath)
 
         val userSharerInfo = DB_FIELDS.FIELD_EXPENSE_LIST_SHARER_INFO + "." + fbUser.uid

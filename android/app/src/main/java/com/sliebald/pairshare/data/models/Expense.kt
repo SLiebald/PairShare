@@ -14,6 +14,7 @@ import java.util.*
  * @param imagePath Firebase storage url for the image assigned to the [Expense] (optional).
  * @param thumbnailPath Firebase storage url for the thumbnail image assigned to the [Expense]
  * (optional).
+ * @param created  Time the [Expense] was added. Can be different from the [timeOfExpense].
  * @constructor Creates a new [Expense]
  */
 data class Expense(
@@ -23,11 +24,7 @@ data class Expense(
         val comment: String? = null,
         val timeOfExpense: Date? = null,
         val imagePath: String? = null,
-        val thumbnailPath: String? = null
-) {
-    /**
-     * Time the [Expense] was added. Can be different from the [timeOfExpense].
-     */
-    @ServerTimestamp
-    val created: Date? = null
-}
+        val thumbnailPath: String? = null,
+        @ServerTimestamp
+        val created: Date? = null
+)

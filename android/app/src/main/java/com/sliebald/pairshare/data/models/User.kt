@@ -9,24 +9,14 @@ import java.util.*
  * @param mail The mail address of the User.
  * @param username Username of the User.
  * @param fcmToken FCM Token used for cloud notifications on events.
+ * @param created Time the [User] was created.
+ * @param modified Time the [User] was last modified.
  * @constructor Creates a new [User]
  */
 data class User(
         val mail: String? = null,
         var username: String? = null,
-        var fcmToken: String? = null
-) {
-
-    /**
-     * Time the [User] was created.
-     */
-    @ServerTimestamp
-    val created: Date? = null
-
-    /**
-     * Time the [User] was modified.
-     */
-    @ServerTimestamp
-    var modified: Date? = null
-
-}
+        var fcmToken: String? = null,
+        @ServerTimestamp val created: Date? = null,
+        @ServerTimestamp var modified: Date? = null
+)
