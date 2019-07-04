@@ -82,7 +82,7 @@ public class AddExpenseViewModel extends ViewModel {
      * @param username Current username.
      */
     void addExpense(Double amount, String comment, String username) {
-        Repository.getInstance().addExpense(username, amount, comment, calendar.getValue().getTime(),
+        Repository.INSTANCE.addExpense(username, amount, comment, calendar.getValue().getTime(),
                 image,
                 thumbnail);
         clearImage();

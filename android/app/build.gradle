@@ -50,8 +50,11 @@ dependencies {
     // firebase authentication
     implementation 'com.google.firebase:firebase-auth:18.0.0'
     // firestore database
-    implementation 'com.google.firebase:firebase-firestore:20.1.0'
+    implementation 'com.google.firebase:firebase-firestore-ktx:20.1.0'
     implementation 'com.google.firebase:firebase-storage:18.0.0'
+
+    // firestore database
+
 
     // firebase ui
     // https://github.com/firebase/FirebaseUI-Android

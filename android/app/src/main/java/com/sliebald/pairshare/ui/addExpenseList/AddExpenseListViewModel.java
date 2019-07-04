@@ -45,7 +45,7 @@ public class AddExpenseListViewModel extends ViewModel implements Repository.Res
         } else if (invite.isEmpty()) {
             errorMessage.postValue("Enter the email of the person you want to invite.");
         } else {
-            Repository.getInstance().createNewExpenseList(listName, invite, this);
+            Repository.INSTANCE.createNewExpenseList(listName, invite, this);
         }
 
     }

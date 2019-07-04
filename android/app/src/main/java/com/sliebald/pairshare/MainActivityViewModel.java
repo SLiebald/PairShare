@@ -21,7 +21,7 @@ public class MainActivityViewModel extends ViewModel {
 
 
     public MainActivityViewModel() {
-        this.currentExpenseList = Repository.getInstance().getActiveExpenseList();
+        this.currentExpenseList = Repository.INSTANCE.getActiveExpenseList();
     }
 
     /**
@@ -38,7 +38,7 @@ public class MainActivityViewModel extends ViewModel {
      * Calls the repository to create the user if it doesn't exist.
      */
     void userLoggedIn() {
-        Repository.getInstance().checkNewUser();
+        Repository.INSTANCE.checkNewUser();
     }
 
     /**
@@ -48,7 +48,7 @@ public class MainActivityViewModel extends ViewModel {
      */
     public LiveData<User> getUser() {
         if (user == null)
-            user = Repository.getInstance().getCurrentUser();
+            user = Repository.INSTANCE.getCurrentUser();
         return user;
     }
 }

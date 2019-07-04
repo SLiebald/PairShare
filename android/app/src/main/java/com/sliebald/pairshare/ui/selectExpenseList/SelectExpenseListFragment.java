@@ -57,7 +57,7 @@ public class SelectExpenseListFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-            Query query = Repository.getInstance().getExpenseListsQuery();
+            Query query = Repository.INSTANCE.getExpenseListsQuery();
 
 
             FirestoreRecyclerOptions<ExpenseList> options =

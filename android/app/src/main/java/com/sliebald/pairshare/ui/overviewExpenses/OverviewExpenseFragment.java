@@ -59,7 +59,7 @@ public class OverviewExpenseFragment extends Fragment {
                 .build();
 
         FirestorePagingOptions<Expense> options = new FirestorePagingOptions.Builder<Expense>()
-                .setQuery(Repository.getInstance().getExpensesForActiveListQuery(), config,
+                .setQuery(Repository.INSTANCE.getExpensesForActiveListQuery(), config,
                         Expense.class)
                 .setLifecycleOwner(this)
                 .build();
