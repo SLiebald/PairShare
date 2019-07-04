@@ -18,7 +18,6 @@ import com.sliebald.pairshare.data.models.Expense
 import com.sliebald.pairshare.data.models.ExpenseList
 import com.sliebald.pairshare.data.models.ExpenseSummary
 import com.sliebald.pairshare.data.models.User
-import com.sliebald.pairshare.utils.DB_FIELDS
 import com.sliebald.pairshare.utils.PreferenceUtils
 import java.io.ByteArrayOutputStream
 import java.util.*
@@ -52,6 +51,21 @@ object Repository {
      * Document in the expense_lists collection. Holds [Expense] Documents.
      */
     private const val COLLECTION_KEY_EXPENSE = "expenses"
+
+
+    // ExpenseList field names
+    private const val DOC_EXPENSE_LIST_SHARERS = "sharers"
+    private const val DOC_EXPENSE_LIST_SHARER_INFO = "sharerInfo"
+    private const val DOC_EXPENSE_LIST_SHARER_INFO_NUM_EXPENSES = "numExpenses"
+    private const val DOC_EXPENSE_LIST_SHARER_INFO_SUM_EXPENSES = "sumExpenses"
+    private const val DOC_EXPENSE_LIST_MODIFIED = "modified"
+
+    // User field names
+    private const val DOC_USER_MAIL = "mail"
+
+    // General fields (can occur in multiple objects
+    private const val DOC_CREATED = "created"
+
 
     /**
      * Tag for logging.
@@ -149,8 +163,8 @@ object Repository {
      */
     fun getExpenseListsQuery(): Query {
         return mDb.collection(COLLECTION_KEY_EXPENSE_LISTS)
-                .whereArrayContains(DB_FIELDS.FIELD_EXPENSE_LIST_SHARERS, fbUser.uid)
-                .orderBy(DB_FIELDS.FIELD_EXPENSE_LIST_MODIFIED)
+                .whereArrayContains(DOC_EXPENSE_LIST_SHARERS, fbUser.uid)
+                .orderBy(DOC_EXPENSE_LIST_MODIFIED)
     }
 
     /**
@@ -165,7 +179,7 @@ object Repository {
         return mDb.collection(COLLECTION_KEY_EXPENSE_LISTS)
                 .document(PreferenceUtils.getSelectedSharedExpenseListID())
                 .collection(COLLECTION_KEY_EXPENSE)
-                .orderBy(DB_FIELDS.FIELD_CREATED, Query.Direction.DESCENDING)
+                .orderBy(DOC_CREATED, Query.Direction.DESCENDING)
     }
 
 
@@ -183,7 +197,7 @@ object Repository {
 
         //Get the other invited User.
         Log.d(TAG, "adding expenselist: searching for user")
-        mDb.collection(COLLECTION_KEY_USERS).whereEqualTo(DB_FIELDS.FIELD_USER_MAIL,
+        mDb.collection(COLLECTION_KEY_USERS).whereEqualTo(DOC_USER_MAIL,
                 invite.toLowerCase()).get().addOnCompleteListener { task ->
             Log.d(TAG, "adding expenselist: found a user")
 
@@ -256,7 +270,7 @@ object Repository {
         val expense = Expense(fbUser.uid, username, amount, comment, time, imagePath,
                 thumbnailPath)
 
-        val userSharerInfo = DB_FIELDS.FIELD_EXPENSE_LIST_SHARER_INFO + "." + fbUser.uid
+        val userSharerInfo = DOC_EXPENSE_LIST_SHARER_INFO + "." + fbUser.uid
         val affectedListDocument = mDb.collection(COLLECTION_KEY_EXPENSE_LISTS)
                 .document(PreferenceUtils.getSelectedSharedExpenseListID())
         val expenseDocument = affectedListDocument.collection(COLLECTION_KEY_EXPENSE).document()
@@ -267,9 +281,9 @@ object Repository {
         val batch = mDb.batch()
         batch.set(expenseDocument, expense)
         batch.update(affectedListDocument,
-                userSharerInfo + "." + DB_FIELDS.FIELD_EXPENSE_LIST_SHARER_INFO_SUM_EXPENSES,
+                "$userSharerInfo.$DOC_EXPENSE_LIST_SHARER_INFO_SUM_EXPENSES",
                 FieldValue.increment(expense.amount),
-                userSharerInfo + "." + DB_FIELDS.FIELD_EXPENSE_LIST_SHARER_INFO_NUM_EXPENSES,
+                "$userSharerInfo.$DOC_EXPENSE_LIST_SHARER_INFO_NUM_EXPENSES",
                 FieldValue.increment(1))
         batch.commit()
     }
