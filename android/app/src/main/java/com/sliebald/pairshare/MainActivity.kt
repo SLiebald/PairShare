@@ -8,11 +8,11 @@ import android.text.style.ForegroundColorSpan
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
@@ -34,9 +34,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
     private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private lateinit var authStateListener: FirebaseAuth.AuthStateListener
-    private val mViewModel: MainActivityViewModel by lazy {
-        ViewModelProviders.of(this).get(MainActivityViewModel::class.java)
-    }
+    private val mViewModel: MainActivityViewModel by viewModels()
 
     private lateinit var mBinding: ActivityMainBinding
 
@@ -80,7 +78,7 @@ class MainActivity : AppCompatActivity() {
             if (PreferenceUtils.selectedSharedExpenseListID.isEmpty()) {
                 mBinding.bottomNavView.visibility = View.GONE
                 if (!(destination.id == R.id.selectExpenseList_dest || destination.id == R.id.addExpenseList_dest)) {
-                    Snackbar.make(mBinding.mainLayout,
+                    Snackbar.make(mBinding.mainLayout.rootView,
                             getString(R.string.warning_add_select_list),
                             Snackbar.LENGTH_LONG).show()
                     controller.navigate(R.id.selectExpenseList_dest)

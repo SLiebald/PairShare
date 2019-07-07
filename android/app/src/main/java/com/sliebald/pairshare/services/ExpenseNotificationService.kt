@@ -1,4 +1,4 @@
-package com.sliebald.pairshare.ui.services
+package com.sliebald.pairshare.services
 
 import com.google.firebase.messaging.FirebaseMessagingService
 

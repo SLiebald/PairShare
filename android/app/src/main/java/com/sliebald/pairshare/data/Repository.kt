@@ -121,10 +121,12 @@ object Repository {
      * If the user already exists, nothing is changed.
      */
     fun checkNewUser() {
-        val userName: String? = if (fbUser.displayName != null && fbUser.displayName!!.isNotEmpty())
-            fbUser.displayName
+        val userName: String = if (fbUser.displayName != null && fbUser.displayName!!.isNotEmpty())
+            fbUser.displayName!!
+        else if (fbUser.email != null)
+            fbUser.email!!
         else
-            fbUser.email
+            "unknown"
 
         //Get the firebase cloud messaging token, then add the user or update him.
         //TODO: Token should be monitored in case it changes:

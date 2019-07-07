@@ -15,7 +15,7 @@ import java.util.*
  */
 data class User(
         val mail: String? = null,
-        var username: String? = null,
+        var username: String = "unknown",
         var fcmToken: String? = null,
         @ServerTimestamp val created: Date? = null,
         @ServerTimestamp var modified: Date? = null

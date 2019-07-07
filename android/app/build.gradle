@@ -46,7 +46,8 @@ dependencies {
     implementation 'android.arch.navigation:navigation-fragment-ktx:1.0.0'
     implementation 'android.arch.navigation:navigation-runtime-ktx:1.0.0'
     implementation 'android.arch.navigation:navigation-ui-ktx:1.0.0'
-
+    implementation 'androidx.fragment:fragment-ktx:1.2.0-alpha01'
+    implementation 'androidx.activity:activity-ktx:1.1.0-alpha01'
     // Keyboard event listener
     // https://github.com/yshrsmz/KeyboardVisibilityEvent
     implementation 'net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:2.3.0'

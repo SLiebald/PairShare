@@ -32,7 +32,7 @@
 
         </activity>
         <service
-            android:name=".ui.services.ExpenseNotificationService"
+            android:name="com.sliebald.pairshare.services.ExpenseNotificationService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
