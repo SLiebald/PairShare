@@ -18,21 +18,21 @@ class PreferenceUtils {
          * @return The id of the currently selected expense.
          */
         var selectedSharedExpenseListID: String
-            get() = PreferenceManager.getDefaultSharedPreferences(MyApplication.getContext())
+            get() = PreferenceManager.getDefaultSharedPreferences(MyApplication.context)
                     .getString(PREFERENCE_KEY_SELECTED_EXPENSE, "")!!
             set(listID) {
-                val preferences = PreferenceManager.getDefaultSharedPreferences(MyApplication.getContext())
+                val preferences = PreferenceManager.getDefaultSharedPreferences(MyApplication.context)
                 val editor = preferences.edit()
                 editor.putString(PREFERENCE_KEY_SELECTED_EXPENSE, listID)
                 editor.apply()
             }
 
         fun registerActiveListChangedListener(listener: SharedPreferences.OnSharedPreferenceChangeListener) {
-            PreferenceManager.getDefaultSharedPreferences(MyApplication.getContext()).registerOnSharedPreferenceChangeListener(listener)
+            PreferenceManager.getDefaultSharedPreferences(MyApplication.context).registerOnSharedPreferenceChangeListener(listener)
         }
 
         fun unregisterSelectedListChangedListener(listener: SharedPreferences.OnSharedPreferenceChangeListener) {
-            PreferenceManager.getDefaultSharedPreferences(MyApplication.getContext()).unregisterOnSharedPreferenceChangeListener(listener)
+            PreferenceManager.getDefaultSharedPreferences(MyApplication.context).unregisterOnSharedPreferenceChangeListener(listener)
         }
     }
 

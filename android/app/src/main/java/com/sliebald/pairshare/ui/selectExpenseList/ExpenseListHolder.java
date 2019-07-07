@@ -62,7 +62,7 @@ public class ExpenseListHolder extends RecyclerView.ViewHolder {
     }
 
     private void setBackgroundColor(int color) {
-        mCardView.setCardBackgroundColor(MyApplication.getContext()
+        mCardView.setCardBackgroundColor(MyApplication.Companion.getContext()
                 .getResources().getColor(color, null));
     }
 

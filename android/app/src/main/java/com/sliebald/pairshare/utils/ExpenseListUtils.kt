@@ -41,16 +41,16 @@ object ExpenseListUtils {
     fun getExpenseDifferenceColor(difference: Double): Int {
 
         return if (difference >= 100)
-            MyApplication.getContext()
+            MyApplication.context
                     .resources.getColor(R.color.balance_positive, null)
         else if (difference > 0)
-            MyApplication.getContext()
+            MyApplication.context
                     .resources.getColor(R.color.balance_slight_positive, null)
         else if (difference < 0 && difference > -100)
-            MyApplication.getContext()
+            MyApplication.context
                     .resources.getColor(R.color.balance_slight_negative, null)
         else if (difference <= -100)
-            MyApplication.getContext()
+            MyApplication.context
                     .resources.getColor(R.color.balance_negative, null)
         else
             Color.BLACK

@@ -61,12 +61,12 @@ public class ExpenseHolder extends RecyclerView.ViewHolder {
         ViewGroup.MarginLayoutParams params =
                 (ViewGroup.MarginLayoutParams) mCardView.getLayoutParams();
         if (expense.getUserID().equals(myId)) {
-            mCardView.setCardBackgroundColor(MyApplication.getContext()
+            mCardView.setCardBackgroundColor(MyApplication.Companion.getContext()
                     .getResources().getColor(R.color.balance_slight_positive, null));
             params.setMarginEnd(15);
             params.setMarginStart(120);
         } else {
-            mCardView.setCardBackgroundColor(MyApplication.getContext()
+            mCardView.setCardBackgroundColor(MyApplication.Companion.getContext()
                     .getResources().getColor(R.color.balance_slight_negative, null));
             params.setMarginStart(15);
             params.setMarginEnd(120);
@@ -87,11 +87,11 @@ public class ExpenseHolder extends RecyclerView.ViewHolder {
             StorageReference thumbnailRef =
                     firebaseStorage.getReference().child(expense.getThumbnailPath());
             CircularProgressDrawable progressDrawable =
-                    new CircularProgressDrawable(MyApplication.getContext());
+                    new CircularProgressDrawable(MyApplication.Companion.getContext());
             progressDrawable.setStrokeWidth(5f);
             progressDrawable.setCenterRadius(30f);
             progressDrawable.start();
-            GlideApp.with(MyApplication.getContext())
+            GlideApp.with(MyApplication.Companion.getContext())
                     .load(thumbnailRef)
                     .placeholder(progressDrawable)
                     .into(mImageView);
