@@ -39,10 +39,10 @@ public class ExpenseListHolder extends RecyclerView.ViewHolder {
         setListName(expenseList.getListName());
         setBalance(expenseList);
         mCardView.setOnClickListener(view -> {
-            PreferenceUtils.setSelectedSharedExpenseListID(mListID);
+            PreferenceUtils.Companion.setSelectedSharedExpenseListID(mListID);
         });
-        PreferenceUtils.registerActiveListChangedListener((sharedPreferences,
-                                                           key) -> {
+        PreferenceUtils.Companion.registerActiveListChangedListener((sharedPreferences,
+                                                                     key) -> {
             if (key != null && key.equals(PreferenceUtils.PREFERENCE_KEY_SELECTED_EXPENSE)) {
                 String changedList =
                         sharedPreferences.getString(PreferenceUtils.PREFERENCE_KEY_SELECTED_EXPENSE, "");
@@ -54,8 +54,8 @@ public class ExpenseListHolder extends RecyclerView.ViewHolder {
             }
         });
         String selectedList =
-                PreferenceUtils.getSelectedSharedExpenseListID();
-        if (selectedList != null && selectedList.equals(mListID)) {
+                PreferenceUtils.Companion.getSelectedSharedExpenseListID();
+        if (selectedList.equals(mListID)) {
             setBackgroundColor(R.color.colorPrimaryLight);
         }
 

@@ -95,8 +95,7 @@ public class MainActivity extends AppCompatActivity {
         // bottom navigation visibility.
         mNavController.addOnDestinationChangedListener((controller, destination, arguments) -> {
             //if no expenselist is selected, let them select or add one
-            if ((PreferenceUtils.getSelectedSharedExpenseListID() == null
-                    || PreferenceUtils.getSelectedSharedExpenseListID().isEmpty())) {
+            if (PreferenceUtils.Companion.getSelectedSharedExpenseListID().isEmpty()) {
                 mBinding.bottomNavView.setVisibility(View.GONE);
                 if (!(destination.getId() == R.id.selectExpenseList_dest
                         || destination.getId() == R.id.addExpenseList_dest)) {

@@ -94,8 +94,12 @@ object Repository {
     /**
      * Livedata for the currently selected ExpenseList.
      */
-    private var activeExpenseList: MutableLiveData<ExpenseList>? = null
+    private val activeExpenseList: MutableLiveData<ExpenseList> = MutableLiveData()
 
+
+    init {
+        PreferenceUtils.registerActiveListChangedListener(SharedPreferences.OnSharedPreferenceChangeListener { _, _ -> updateActiveExpenseList() })
+    }
 
     /**
      * Gets the currently logged in [User] and returns the result as [LiveData].
@@ -177,7 +181,7 @@ object Repository {
      */
     fun getExpensesForActiveListQuery(): Query {
         return mDb.collection(COLLECTION_KEY_EXPENSE_LISTS)
-                .document(PreferenceUtils.getSelectedSharedExpenseListID())
+                .document(PreferenceUtils.selectedSharedExpenseListID)
                 .collection(COLLECTION_KEY_EXPENSE)
                 .orderBy(DOC_CREATED, Query.Direction.DESCENDING)
     }
@@ -272,7 +276,7 @@ object Repository {
 
         val userSharerInfo = DOC_EXPENSE_LIST_SHARER_INFO + "." + fbUser.uid
         val affectedListDocument = mDb.collection(COLLECTION_KEY_EXPENSE_LISTS)
-                .document(PreferenceUtils.getSelectedSharedExpenseListID())
+                .document(PreferenceUtils.selectedSharedExpenseListID)
         val expenseDocument = affectedListDocument.collection(COLLECTION_KEY_EXPENSE).document()
 
         // add the new expense and update the counters in the parent list as batch operation
@@ -292,9 +296,9 @@ object Repository {
     /**
      * [android.content.SharedPreferences.OnSharedPreferenceChangeListener] for updating
      * the livedata if another list was selected. Cannot be a local variable, as it might get
-     * garbage collected in that case.
+     * garbage collected in that case. TODO: check if it works with kotlin
      */
-    private var onPrefChangeListener: SharedPreferences.OnSharedPreferenceChangeListener? = null
+    //private var onPrefChangeListener: SharedPreferences.OnSharedPreferenceChangeListener? = null
 
     /**
      * Get the [ExpenseList] that is currently selected from firestore,
@@ -302,16 +306,8 @@ object Repository {
      * @return The [ExpenseList] as [LiveData].
      */
     fun getActiveExpenseList(): LiveData<ExpenseList> {
-
-        if (activeExpenseList == null) {
-            activeExpenseList = MutableLiveData()
-            onPrefChangeListener = SharedPreferences.OnSharedPreferenceChangeListener { _, _ -> updateActiveExpenseList() }
-
-            PreferenceUtils.registerActiveListChangedListener(onPrefChangeListener)
-            Log.d(TAG, "Added activeListChangedListener")
-        }
         updateActiveExpenseList()
-        return activeExpenseList as MutableLiveData<ExpenseList>
+        return activeExpenseList
     }
 
 
@@ -322,15 +318,16 @@ object Repository {
     private fun updateActiveExpenseList() {
         Log.d(TAG, "Active List changed, updating LiveData.")
         //TODO: cleanup old snapshotlisteners required?
-        if (PreferenceUtils.getSelectedSharedExpenseListID() != null)
+        mDb.collection(COLLECTION_KEY_EXPENSE_LISTS)
+                .document(PreferenceUtils.selectedSharedExpenseListID)
             mDb.collection(COLLECTION_KEY_EXPENSE_LISTS)
-                    .document(PreferenceUtils.getSelectedSharedExpenseListID())
+                    .document(PreferenceUtils.selectedSharedExpenseListID)
                     .addSnapshotListener { snapshot, e ->
                         if (e != null) {
                             Log.w(TAG, "Listen failed.", e)
                         } else if (snapshot != null && snapshot.exists()) {
                             val list = snapshot.toObject(ExpenseList::class.java)
-                            activeExpenseList!!.postValue(list)
+                            activeExpenseList.postValue(list)
                         }
                     }
     }
