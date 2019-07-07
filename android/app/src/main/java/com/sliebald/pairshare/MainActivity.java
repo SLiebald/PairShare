@@ -118,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
         //Get the current expense diff for the subtitle in all fragments
         mViewModel.getActiveExpenseList().observe(this, expenseList -> {
             double expenseDiff =
-                    ExpenseListUtils.getExpenseDifferenceFor(mFirebaseAuth.getUid(),
+                    ExpenseListUtils.INSTANCE.getExpenseDifferenceFor(mFirebaseAuth.getUid(),
                             expenseList);
 
             String title = expenseList.getListName() + ": ";
@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
 
             Spannable spannable = new SpannableString(completeSummaryString);
 
-            spannable.setSpan(new ForegroundColorSpan(ExpenseListUtils.getExpenseDifferenceColor(expenseDiff)), title.length(),
+            spannable.setSpan(new ForegroundColorSpan(ExpenseListUtils.INSTANCE.getExpenseDifferenceColor(expenseDiff)), title.length(),
                     completeSummaryString.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
             mBinding.toolbar.setSubtitle(spannable);
@@ -191,7 +191,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onSupportNavigateUp() {
-        KeyboardUtils.hideKeyboard(this, mBinding.getRoot());
+        KeyboardUtils.INSTANCE.hideKeyboard(this, mBinding.getRoot());
         return NavigationUI.navigateUp(mNavController, mAppBarConfiguration);
     }
 

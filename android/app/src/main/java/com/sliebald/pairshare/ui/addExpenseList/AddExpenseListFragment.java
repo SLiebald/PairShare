@@ -58,7 +58,7 @@ public class AddExpenseListFragment extends Fragment {
             if (successful) {
                 Snackbar.make(Objects.requireNonNull(getActivity()).findViewById(R.id.main_layout),
                         "Added new List", Snackbar.LENGTH_SHORT).show();
-                KeyboardUtils.hideKeyboard(getContext(), getView());
+                KeyboardUtils.INSTANCE.hideKeyboard(getContext(), getView());
                 navController.navigateUp();
             }
         });

@@ -74,8 +74,8 @@ public class ExpenseListHolder extends RecyclerView.ViewHolder {
     private void setBalance(ExpenseList expenseList) {
         String myId = FirebaseAuth.getInstance().getUid();
         //use int for rounding
-        double difference = ExpenseListUtils.getExpenseDifferenceFor(myId, expenseList);
-        mBalance.setTextColor(ExpenseListUtils.getExpenseDifferenceColor(difference));
+        double difference = ExpenseListUtils.INSTANCE.getExpenseDifferenceFor(myId, expenseList);
+        mBalance.setTextColor(ExpenseListUtils.INSTANCE.getExpenseDifferenceColor(difference));
         mBalance.setText(String.format(Locale.GERMAN, "%.2f€", difference));
 
     }

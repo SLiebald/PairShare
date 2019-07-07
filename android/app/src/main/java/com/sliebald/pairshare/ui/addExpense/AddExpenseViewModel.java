@@ -121,8 +121,8 @@ public class AddExpenseViewModel extends ViewModel {
      * @param image as Bitmap
      */
     void setImage(Bitmap image) {
-        this.image = ImageUtils.getResizedBitmap(image, 640);
-        this.thumbnail = ImageUtils.getResizedBitmap(image, 128);
+        this.image = ImageUtils.INSTANCE.getResizedBitmap(image, 640);
+        this.thumbnail = ImageUtils.INSTANCE.getResizedBitmap(image, 128);
     }
 
     /**

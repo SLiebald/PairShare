@@ -1,4 +1,8 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-android'
+//apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 28
@@ -68,6 +72,7 @@ dependencies {
 
     // Latest Glide release used for firebase-ui: https://goo.gl/LpksbR
     implementation 'com.github.bumptech.glide:glide:4.9.0'
+    // annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
 
     // Firebase cloud messaging for sending updates on new expenses.
@@ -82,6 +87,4 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
 }
-apply plugin: 'com.google.gms.google-services'
-apply plugin: 'kotlin-android-extensions'
-apply plugin: 'kotlin-android'
+
