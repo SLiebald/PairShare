@@ -1,23 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/tv_title_last_expenses"
-            style="@style/title"
-            android:layout_width="match_parent"
+            android:id="@+id/tv_expenseSum_me_label"
+            style="@style/label"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/title_last_expenses" />
+            android:layout_margin="8dp"
+            android:text="@string/overview_label_me"
+            app:layout_constraintEnd_toStartOf="@+id/tv_expenseSum_other_label"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_expenseSum_other_label"
+            style="@style/label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:text="@string/overview_label_other"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/tv_expenseSum_me_label"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <TextView
+            android:id="@+id/tv_amount_me"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:textAlignment="center"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="@id/tv_expenseSum_me_label"
+            app:layout_constraintStart_toStartOf="@id/tv_expenseSum_me_label"
+            app:layout_constraintTop_toBottomOf="@id/tv_expenseSum_me_label" />
+
+        <TextView
+            android:id="@+id/tv_amount_other"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:textAlignment="center"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="@id/tv_expenseSum_other_label"
+            app:layout_constraintStart_toStartOf="@id/tv_expenseSum_other_label"
+            app:layout_constraintTop_toBottomOf="@id/tv_expenseSum_other_label" />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="tv_amount_me,tv_amount_other" />
+
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_last_expenses"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="0dp"
+            android:layout_marginTop="4dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/barrier" />
 
-    </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

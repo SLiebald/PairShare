@@ -79,7 +79,7 @@ class AddExpenseFragment : Fragment() {
                         mViewModel.addExpense(amount, mBinding.etAddComment.text.toString(),
                                 user.username)
                         Snackbar.make(mBinding.clAddExpenseLayout,
-                                "Added expense of " + mBinding.etAddExpense.text + " to list",
+                                "Added expense of ${mBinding.etAddExpense.text} to list",
                                 Snackbar.LENGTH_SHORT).show()
                         mBinding.etAddComment.text.clear()
                         mBinding.etAddExpense.text.clear()

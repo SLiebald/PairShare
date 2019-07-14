@@ -42,5 +42,7 @@
     <string name="about_cula_code_url">https://github.com/SLiebald/PairShare</string>
     <string name="menu_about">About</string>
     <string name="warning_add_select_list">Add or select a list</string>
+    <string name="overview_label_other">Other:</string>
+    <string name="overview_label_me">Me:</string>
 
 </resources>

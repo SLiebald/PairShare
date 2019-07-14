@@ -5,18 +5,24 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.LinearLayoutManager
-
 import com.firebase.ui.firestore.paging.FirestorePagingAdapter
 import com.firebase.ui.firestore.paging.FirestorePagingOptions
+import com.google.firebase.auth.FirebaseAuth
+import com.sliebald.pairshare.MainActivityViewModel
 import com.sliebald.pairshare.R
 import com.sliebald.pairshare.data.Repository
 import com.sliebald.pairshare.data.models.Expense
 import com.sliebald.pairshare.data.models.ExpenseList
+import com.sliebald.pairshare.data.models.User
 import com.sliebald.pairshare.databinding.FragmentOverviewExpenseBinding
+import com.sliebald.pairshare.utils.ExpenseListUtils
 
 /**
  * Fragment for managing the overview of [ExpenseList]s the current user is involved with.
@@ -29,6 +35,8 @@ class OverviewExpenseFragment : Fragment() {
          */
         private val TAG = OverviewExpenseFragment::class.java.simpleName
     }
+
+    private val mViewModelMain: MainActivityViewModel by activityViewModels()
 
 
     /**
@@ -52,8 +60,8 @@ class OverviewExpenseFragment : Fragment() {
 
         val config = PagedList.Config.Builder()
                 .setEnablePlaceholders(false)
-                .setPrefetchDistance(10)
-                .setPageSize(20)
+                .setPrefetchDistance(5)
+                .setPageSize(15)
                 .build()
 
         val options = FirestorePagingOptions.Builder<Expense>()
@@ -65,7 +73,7 @@ class OverviewExpenseFragment : Fragment() {
             public override fun onBindViewHolder(holder: ExpenseHolder, position: Int,
                                                  expense: Expense) {
                 holder.bind(expense)
-                Log.d(TAG, "Binding Expense: " + expense.comment)
+                Log.d(TAG, "Binding Expense: ${expense.comment}")
             }
 
             override fun onCreateViewHolder(group: ViewGroup, i: Int): ExpenseHolder {
@@ -77,6 +85,38 @@ class OverviewExpenseFragment : Fragment() {
 
         mBinding.rvLastExpenses.adapter = expenseAdapter
         mBinding.rvLastExpenses.layoutManager = LinearLayoutManager(context)
+
+        mViewModelMain.activeExpenseList.observe(this, Observer { list ->
+
+            val obs = Observer<User> {
+                val uid = FirebaseAuth.getInstance().currentUser!!.uid
+                val amountMe = list.sharerInfo
+                        ?.get(uid)
+                        ?.sumExpenses
+                        ?: 0.0
+
+                val amountOther = list.sharerInfo
+                        ?.filterKeys { it != uid }
+                        ?.map { it.value.sumExpenses }
+                        ?.sum()
+                        ?: 0.0
+
+                val test = list.sharerInfo
+                        ?.filterKeys { it != uid }
+
+                Toast.makeText(context, test.toString(), Toast.LENGTH_LONG).show()
+
+                mBinding.tvAmountMe.text = amountMe.toString()
+                mBinding.tvAmountMe.setTextColor(ExpenseListUtils.getExpenseDifferenceColor
+                (amountMe - amountOther))
+                mBinding.tvAmountOther.text = amountOther.toString()
+                mBinding.tvAmountOther.setTextColor(ExpenseListUtils.getExpenseDifferenceColor
+                (amountOther - amountMe))
+            }
+            mViewModelMain.getUser().observe(this, obs)
+            mViewModelMain.getUser().removeObserver(obs)
+
+        })
 
     }
 
