@@ -90,6 +90,9 @@ object Repository {
             return Firebase.firestore
         }
 
+    private val _currentUser = MutableLiveData<User>()
+    val currentUser: LiveData<User>
+        get() = _currentUser
 
     /**
      * Livedata for the currently selected ExpenseList.
@@ -101,21 +104,7 @@ object Repository {
         PreferenceUtils.registerActiveListChangedListener(SharedPreferences.OnSharedPreferenceChangeListener { _, _ -> updateActiveExpenseList() })
     }
 
-    /**
-     * Gets the currently logged in [User] and returns the result as [LiveData].
-     *
-     */
-    fun getCurrentUser(): LiveData<User> {
 
-        val user = MutableLiveData<User>()
-
-        if (fbUser != null)
-            mDb.collection(COLLECTION_KEY_USERS)
-                    .document(fbUser!!.uid)
-                    .get()
-                    .addOnSuccessListener { documentSnapshot -> user.postValue(documentSnapshot.toObject(User::class.java)) }
-        return user
-    }
 
 
     /**
@@ -127,6 +116,7 @@ object Repository {
             Log.d(TAG, "FirebaseUser null (not authenticated)")
             return
         }
+
 
         val userName: String = if (fbUser!!.displayName != null && fbUser!!.displayName!!
                         .isNotEmpty())
@@ -163,6 +153,15 @@ object Repository {
                                     }
                                 }
                             }
+                }
+
+        // update the current user livedata
+        mDb.collection(COLLECTION_KEY_USERS)
+                .document(fbUser!!.uid)
+                .get()
+                .addOnSuccessListener { documentSnapshot ->
+                    _currentUser.postValue(documentSnapshot.toObject
+                    (User::class.java))
                 }
     }
 

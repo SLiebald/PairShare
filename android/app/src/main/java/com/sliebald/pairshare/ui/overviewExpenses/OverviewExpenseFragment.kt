@@ -107,8 +107,8 @@ class OverviewExpenseFragment : Fragment() {
                 mBinding.tvAmountOther.setTextColor(ExpenseListUtils.getExpenseDifferenceColor
                 (amountOther - amountMe))
             }
-            mViewModelMain.getUser().observe(this, obs)
-            mViewModelMain.getUser().removeObserver(obs)
+            mViewModelMain.user.observe(this, obs)
+            mViewModelMain.user.removeObserver(obs)
 
         })
 

@@ -22,7 +22,7 @@ class MainActivityViewModel : ViewModel() {
     /**
      * The currently logged in User;
      */
-    private var user: LiveData<User> = Repository.getCurrentUser()
+    val user: LiveData<User> = Repository.currentUser
 
 
     /**
@@ -30,14 +30,5 @@ class MainActivityViewModel : ViewModel() {
      */
     internal fun userLoggedIn() {
         Repository.checkNewUser()
-    }
-
-    /**
-     * Get the currently logged in user.
-     *
-     * @return The [User] currently logged in.
-     */
-    fun getUser(): LiveData<User> {
-        return user
     }
 }

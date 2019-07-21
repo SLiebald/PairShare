@@ -76,9 +76,9 @@ class AddExpenseFragment : Fragment() {
                 // Get the Username and add expense.
                 try {
                     val amount = mBinding.etAddExpense.text.toString().toDouble()
-                    mViewModelMain.getUser().observe(this, object : Observer<User> {
+                    mViewModelMain.user.observe(this, object : Observer<User> {
                         override fun onChanged(user: User) {
-                            mViewModelMain.getUser().removeObserver(this)
+                            mViewModelMain.user.removeObserver(this)
                             mViewModel.addExpense(amount, mBinding.etAddComment.text.toString(),
                                     user.username)
                             Snackbar.make(mBinding.clAddExpenseLayout,

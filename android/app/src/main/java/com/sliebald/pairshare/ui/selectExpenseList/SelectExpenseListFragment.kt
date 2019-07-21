@@ -7,14 +7,17 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
-import com.google.firebase.auth.FirebaseAuth
+import com.sliebald.pairshare.MainActivityViewModel
 import com.sliebald.pairshare.R
 import com.sliebald.pairshare.data.Repository
 import com.sliebald.pairshare.data.models.ExpenseList
+import com.sliebald.pairshare.data.models.User
 import com.sliebald.pairshare.databinding.FragmentSelectExpenseListBinding
 
 /**
@@ -26,6 +29,9 @@ class SelectExpenseListFragment : Fragment() {
      * Adapter for displaying available expenseLists.
      */
     private lateinit var expenseListsAdapter: FirestoreRecyclerAdapter<*, *>
+
+    private val mViewModelMain: MainActivityViewModel by activityViewModels()
+
 
     /**
      * Databinding of the corresponding fragment layout.
@@ -44,32 +50,38 @@ class SelectExpenseListFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        if (FirebaseAuth.getInstance().currentUser != null) {
-            val query = Repository.getExpenseListsQuery()
+        mBinding.rvActiveLists.layoutManager = LinearLayoutManager(context)
 
+        mViewModelMain.user.observe(this, Observer<User> {
+            Log.d(TAG, "User changed")
+            initAdapter()
+        })
+    }
 
-            val options = FirestoreRecyclerOptions.Builder<ExpenseList>()
-                    .setQuery(query, ExpenseList::class.java)
-                    .setLifecycleOwner(this)
-                    .build()
+    private fun initAdapter(){
+        val query = Repository.getExpenseListsQuery()
 
-            expenseListsAdapter = object : FirestoreRecyclerAdapter<ExpenseList, ExpenseListHolder>(options) {
-                public override fun onBindViewHolder(holder: ExpenseListHolder, position: Int,
-                                                     expenseList: ExpenseList) {
-                    holder.bind(expenseList, snapshots.getSnapshot(position).id)
-                    Log.d(TAG, "Binding List: " + expenseList.listName!!)
-                }
+        val options = FirestoreRecyclerOptions.Builder<ExpenseList>()
+                .setQuery(query, ExpenseList::class.java)
+                .setLifecycleOwner(viewLifecycleOwner)
+                .build()
 
-                override fun onCreateViewHolder(group: ViewGroup, i: Int): ExpenseListHolder {
-                    val view = LayoutInflater.from(group.context)
-                            .inflate(R.layout.recycler_item_expense_list, group, false)
-                    return ExpenseListHolder(view)
-                }
+        expenseListsAdapter = object : FirestoreRecyclerAdapter<ExpenseList, ExpenseListHolder>(options) {
+            public override fun onBindViewHolder(holder: ExpenseListHolder, position: Int,
+                                                 expenseList: ExpenseList) {
+                holder.bind(expenseList, snapshots.getSnapshot(position).id)
+                Log.d(TAG, "Binding List: ${expenseList.listName!!}")
             }
 
-            mBinding.rvActiveLists.adapter = expenseListsAdapter
-            mBinding.rvActiveLists.layoutManager = LinearLayoutManager(context)
+            override fun onCreateViewHolder(group: ViewGroup, i: Int): ExpenseListHolder {
+                val view = LayoutInflater.from(group.context)
+                        .inflate(R.layout.recycler_item_expense_list, group, false)
+                return ExpenseListHolder(view)
+            }
         }
+        mBinding.rvActiveLists.adapter = expenseListsAdapter
+        expenseListsAdapter.notifyDataSetChanged()
+
     }
 
     companion object {
