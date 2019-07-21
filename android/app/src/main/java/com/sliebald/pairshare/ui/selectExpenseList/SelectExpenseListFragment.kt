@@ -58,7 +58,7 @@ class SelectExpenseListFragment : Fragment() {
         })
     }
 
-    private fun initAdapter(){
+    private fun initAdapter() {
         val query = Repository.getExpenseListsQuery()
 
         val options = FirestoreRecyclerOptions.Builder<ExpenseList>()
