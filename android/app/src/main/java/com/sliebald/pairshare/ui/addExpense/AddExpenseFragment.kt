@@ -1,6 +1,7 @@
 package com.sliebald.pairshare.ui.addExpense
 
-import android.Manifest
+import android.Manifest.permission.CAMERA
+import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.app.Activity.RESULT_OK
 import android.app.DatePickerDialog
 import android.content.Intent
@@ -25,6 +26,7 @@ import com.sliebald.pairshare.MainActivityViewModel
 import com.sliebald.pairshare.R
 import com.sliebald.pairshare.data.models.User
 import com.sliebald.pairshare.databinding.FragmentAddExpenseBinding
+import com.sliebald.pairshare.utils.ImageUtils
 import net.yslibrary.android.keyboardvisibilityevent.util.UIUtil
 import java.io.File
 import java.io.IOException
@@ -64,38 +66,40 @@ class AddExpenseFragment : Fragment() {
         mViewModel.calendar.observe(this, Observer { this.setDate(it) })
 
         // Add onClicklistener for adding an expense.
-        mBinding.button.setOnClickListener {
+        mBinding.btAddExpense.setOnClickListener {
             // check if input is valid
             if (mBinding.etAddExpense.text.toString().isEmpty() || mBinding.etAddDate.text.toString().isEmpty()) {
                 Snackbar.make(mBinding.clAddExpenseLayout, "Expense and date cannot be empty!",
                         Snackbar.LENGTH_SHORT).show()
-            }
-            // Get the Username and add expense.
-            try {
-                val amount = mBinding.etAddExpense.text.toString().toDouble()
-                mViewModelMain.getUser().observe(this, object : Observer<User> {
-                    override fun onChanged(user: User) {
-                        mViewModelMain.getUser().removeObserver(this)
-                        mViewModel.addExpense(amount, mBinding.etAddComment.text.toString(),
-                                user.username)
-                        Snackbar.make(mBinding.clAddExpenseLayout,
-                                "Added expense of ${mBinding.etAddExpense.text} to list",
-                                Snackbar.LENGTH_SHORT).show()
-                        mBinding.etAddComment.text.clear()
-                        mBinding.etAddExpense.text.clear()
-                        mBinding.ibAddImage.setImageResource(android.R.color.transparent)
-                        UIUtil.hideKeyboard(Objects.requireNonNull(activity))
 
-                    }
-                })
+            } else {
+                // Get the Username and add expense.
+                try {
+                    val amount = mBinding.etAddExpense.text.toString().toDouble()
+                    mViewModelMain.getUser().observe(this, object : Observer<User> {
+                        override fun onChanged(user: User) {
+                            mViewModelMain.getUser().removeObserver(this)
+                            mViewModel.addExpense(amount, mBinding.etAddComment.text.toString(),
+                                    user.username)
+                            Snackbar.make(mBinding.clAddExpenseLayout,
+                                    "Added expense of ${mBinding.etAddExpense.text} to list",
+                                    Snackbar.LENGTH_SHORT).show()
+                            mBinding.etAddComment.text.clear()
+                            mBinding.etAddExpense.text.clear()
+                            mBinding.ivAddImage.setImageDrawable(null)
+                            UIUtil.hideKeyboard(Objects.requireNonNull(activity))
 
-            } catch (ex: NumberFormatException) {
-                Snackbar.make(mBinding.clAddExpenseLayout, "Invalid date",
-                        Snackbar.LENGTH_SHORT).show()
+                        }
+                    })
+
+                } catch (ex: NumberFormatException) {
+                    Snackbar.make(mBinding.clAddExpenseLayout, "Invalid date",
+                            Snackbar.LENGTH_SHORT).show()
+                }
             }
         }
 
-        mBinding.ibAddImage.setOnClickListener { takePicture() }
+        mBinding.btAddPic.setOnClickListener { takePicture() }
 
     }
 
@@ -132,35 +136,37 @@ class AddExpenseFragment : Fragment() {
      * Starts an [Intent] for retrieving an image.
      */
     private fun takePicture() {
-        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        if (activity != null && context != null
-                && takePictureIntent.resolveActivity(context!!.packageManager) != null) {
 
-
-            if (ContextCompat.checkSelfPermission(context!!,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(activity!!,
-                        arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                        PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE)
-            } else {
-
-
-                val photoFile: File?
-                try {
-                    photoFile = createImageFile()
-                } catch (ex: IOException) {
-                    return
-                }
-
-                // Continue only if the File was successfully created
-                val photoURI = FileProvider.getUriForFile(context!!,
-                        "com.sliebald.pairshare.fileprovider",
-                        photoFile)
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-                startActivityForResult(takePictureIntent, REQUEST_TAKE_PICTURE)
-            }
+        if (!checkPermissions()) {
+            requestPermissions()
+        } else {
+            val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            val picFile: File = createImageFile()
+            val picURI = FileProvider.getUriForFile(context!!,
+                    "com.sliebald.pairshare.fileprovider", picFile)
+            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, picURI)
+            startActivityForResult(takePictureIntent, REQUEST_TAKE_PICTURE)
         }
 
+    }
+
+
+    /**
+     * Check for the required permissions.
+     */
+    private fun checkPermissions(): Boolean {
+        return ContextCompat.checkSelfPermission(context!!, CAMERA) == PackageManager
+                .PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(context!!, READ_EXTERNAL_STORAGE) ==
+                PackageManager.PERMISSION_GRANTED
+    }
+
+    /**
+     * Request required permissions.
+     */
+    private fun requestPermissions() {
+        ActivityCompat.requestPermissions(activity!!, arrayOf(READ_EXTERNAL_STORAGE, CAMERA),
+                PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE)
     }
 
 
@@ -174,27 +180,22 @@ class AddExpenseFragment : Fragment() {
     @Throws(IOException::class)
     private fun createImageFile(): File {
         val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.GERMAN).format(Date())
-        val imageFileName = "JPEG_" + timeStamp + "_"
         val storageDir = context!!.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-        val image = File.createTempFile(imageFileName, ".jpg", storageDir)
+        val image = File.createTempFile("JPEG_$timeStamp", ".jpg", storageDir)
         mViewModel.latestImagePath = image.absolutePath
         return image
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_TAKE_PICTURE && resultCode == RESULT_OK && data != null
-                && context != null) {
-            try {
-                val imageBitmap = MediaStore.Images.Media.getBitmap(context!!.contentResolver,
-                        Uri.fromFile(File(mViewModel.latestImagePath)))
-                mViewModel.image = imageBitmap
-                mBinding.ibAddImage.setImageBitmap(mViewModel.image)
+        // Handle taking a picture
+        if (requestCode == REQUEST_TAKE_PICTURE && resultCode == RESULT_OK) {
+            mViewModel.image = ImageUtils.getResizedBitmap(Uri.fromFile(File(mViewModel
+                    .latestImagePath)), 600, context!!)
+            mViewModel.thumbnail = ImageUtils.getResizedBitmap(Uri.fromFile(File(mViewModel
+                    .latestImagePath)), 160, context!!)
 
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
-
+            mBinding.ivAddImage.setImageBitmap(mViewModel.image)
         } else
             super.onActivityResult(requestCode, resultCode, data)
     }

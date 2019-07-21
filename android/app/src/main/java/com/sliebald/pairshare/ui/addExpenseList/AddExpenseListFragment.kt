@@ -42,7 +42,7 @@ class AddExpenseListFragment : Fragment() {
             Snackbar.make(mBinding.layoutAddExpenseList, errorMessage,
                     Snackbar.LENGTH_SHORT).show()
         })
-        mBinding.button.setOnClickListener {
+        mBinding.btAddPic.setOnClickListener {
             mViewModel.createExpenseList(mBinding.etAddExpenseListName.text.toString(),
                     mBinding.etAddExpenseListInvite.text.toString())
         }

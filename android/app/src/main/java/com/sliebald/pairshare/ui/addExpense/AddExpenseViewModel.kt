@@ -6,7 +6,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.sliebald.pairshare.data.Repository
 import com.sliebald.pairshare.data.models.Expense
-import com.sliebald.pairshare.utils.ImageUtils
 import java.util.*
 
 /**
@@ -24,20 +23,11 @@ class AddExpenseViewModel : ViewModel() {
      * Image to be added to the expense.
      */
     var image: Bitmap? = null
-        set(value) {
-            if (value != null) {
-                field = ImageUtils.getResizedBitmap(value, 640)
-                this.thumbnail = ImageUtils.getResizedBitmap(value, 128)
-            } else {
-                field = null
-                thumbnail = null
-            }
-        }
 
     /**
      * Small footprint thumbnail of the image to be added.
      */
-    private var thumbnail: Bitmap? = null
+    var thumbnail: Bitmap? = null
 
 
     /**

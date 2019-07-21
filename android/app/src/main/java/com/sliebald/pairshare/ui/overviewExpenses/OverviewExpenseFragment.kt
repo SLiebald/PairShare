@@ -5,7 +5,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -100,11 +99,6 @@ class OverviewExpenseFragment : Fragment() {
                         ?.map { it.value.sumExpenses }
                         ?.sum()
                         ?: 0.0
-
-                val test = list.sharerInfo
-                        ?.filterKeys { it != uid }
-
-                Toast.makeText(context, test.toString(), Toast.LENGTH_LONG).show()
 
                 mBinding.tvAmountMe.text = amountMe.toString()
                 mBinding.tvAmountMe.setTextColor(ExpenseListUtils.getExpenseDifferenceColor
