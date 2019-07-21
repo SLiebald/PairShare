@@ -10,8 +10,8 @@ android {
         applicationId "com.sliebald.pairshare"
         minSdkVersion 24
         targetSdkVersion 28
-        versionCode 7
-        versionName "1.0.6"
+        versionCode 8
+        versionName "1.0.7"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -53,12 +53,12 @@ dependencies {
     implementation 'net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:2.3.0'
 
     // firebase
-    implementation 'com.google.firebase:firebase-core:17.0.0'
+    implementation 'com.google.firebase:firebase-core:17.0.1'
     // firebase authentication
-    implementation 'com.google.firebase:firebase-auth:18.0.0'
+    implementation 'com.google.firebase:firebase-auth:18.1.0'
     // firestore database
     implementation 'com.google.firebase:firebase-firestore-ktx:20.1.0'
-    implementation 'com.google.firebase:firebase-storage:18.0.0'
+    implementation 'com.google.firebase:firebase-storage:18.1.0'
 
 
     // firebase ui
