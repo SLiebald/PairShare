@@ -76,9 +76,9 @@ object Repository {
     /**
      * The currently logged in firebase user.
      */
-    private val fbUser: FirebaseUser
+    private val fbUser: FirebaseUser?
         get() {
-            return FirebaseAuth.getInstance().currentUser!!
+            return FirebaseAuth.getInstance().currentUser
         }
 
 
@@ -108,10 +108,12 @@ object Repository {
     fun getCurrentUser(): LiveData<User> {
 
         val user = MutableLiveData<User>()
-        mDb.collection(COLLECTION_KEY_USERS)
-                .document(fbUser.uid)
-                .get()
-                .addOnSuccessListener { documentSnapshot -> user.postValue(documentSnapshot.toObject(User::class.java)) }
+
+        if (fbUser != null)
+            mDb.collection(COLLECTION_KEY_USERS)
+                    .document(fbUser!!.uid)
+                    .get()
+                    .addOnSuccessListener { documentSnapshot -> user.postValue(documentSnapshot.toObject(User::class.java)) }
         return user
     }
 
@@ -121,10 +123,16 @@ object Repository {
      * If the user already exists, nothing is changed.
      */
     fun checkNewUser() {
-        val userName: String = if (fbUser.displayName != null && fbUser.displayName!!.isNotEmpty())
-            fbUser.displayName!!
-        else if (fbUser.email != null)
-            fbUser.email!!
+        if (fbUser == null) {
+            Log.d(TAG, "FirebaseUser null (not authenticated)")
+            return
+        }
+
+        val userName: String = if (fbUser!!.displayName != null && fbUser!!.displayName!!
+                        .isNotEmpty())
+            fbUser!!.displayName!!
+        else if (fbUser!!.email != null)
+            fbUser!!.email!!
         else
             "unknown"
 
@@ -135,23 +143,22 @@ object Repository {
         FirebaseInstanceId.getInstance().instanceId
                 .addOnSuccessListener { instanceIdResult ->
                     val token = instanceIdResult.token
-                    val user = User(fbUser.email!!.toLowerCase(), userName, token)
+                    val user = User(fbUser!!.email!!.toLowerCase(), userName, token)
 
-                    mDb.collection(COLLECTION_KEY_USERS).document(fbUser.uid).get()
+                    mDb.collection(COLLECTION_KEY_USERS).document(fbUser!!.uid).get()
                             .addOnCompleteListener { task ->
                                 if (task.isSuccessful) {
                                     val document = task.result
                                     if (document != null && !document.exists()) {
                                         Firebase.firestore.collection(COLLECTION_KEY_USERS)
-                                                .document(fbUser.uid).set(user)
+                                                .document(fbUser!!.uid).set(user)
                                     } else if (document != null) {
                                         // If user already exists, update him if token differs.
                                         val userUpdate = document.toObject(User::class.java)
                                         if (userUpdate != null && (userUpdate.fcmToken == null || userUpdate.fcmToken != token)) {
                                             userUpdate.fcmToken = token
                                             userUpdate.modified = Calendar.getInstance().time
-                                            mDb.collection(COLLECTION_KEY_USERS).document(fbUser
-                                                    .uid).set(userUpdate)
+                                            mDb.collection(COLLECTION_KEY_USERS).document(fbUser!!.uid).set(userUpdate)
                                         }
                                     }
                                 }
@@ -169,7 +176,7 @@ object Repository {
      */
     fun getExpenseListsQuery(): Query {
         return mDb.collection(COLLECTION_KEY_EXPENSE_LISTS)
-                .whereArrayContains(DOC_EXPENSE_LIST_SHARERS, fbUser.uid)
+                .whereArrayContains(DOC_EXPENSE_LIST_SHARERS, fbUser!!.uid)
                 .orderBy(DOC_EXPENSE_LIST_MODIFIED)
     }
 
@@ -201,7 +208,12 @@ object Repository {
         //TODO: addOnCompleteListener only works when the phone is online. add a check and abort
         // otherwise.
 
+        if (fbUser == null) {
+            Log.d(TAG, "Firebase user not authenticated")
+            return
+        }
         //Get the other invited User.
+
         Log.d(TAG, "adding expenselist: searching for user")
         mDb.collection(COLLECTION_KEY_USERS).whereEqualTo(DOC_USER_MAIL,
                 invite.toLowerCase()).get().addOnCompleteListener { task ->
@@ -212,13 +224,13 @@ object Repository {
                 val documentSnapshot = task.result!!.documents[0]
                 Log.d(TAG, "adding expenselist: got user document")
 
-                if (documentSnapshot.id != fbUser.uid) {
+                if (documentSnapshot.id != fbUser!!.uid) {
                     val sharers = ArrayList<String>(2)
-                    sharers.add(fbUser.uid)
+                    sharers.add(fbUser!!.uid)
                     sharers.add(documentSnapshot.id)
 
                     val sharerInfo = HashMap<String, ExpenseSummary>()
-                    sharerInfo[fbUser.uid] = ExpenseSummary()
+                    sharerInfo[fbUser!!.uid] = ExpenseSummary()
                     sharerInfo[documentSnapshot.id] = ExpenseSummary()
 
                     val expenseList = ExpenseList(listName, sharers, sharerInfo)
@@ -264,6 +276,11 @@ object Repository {
     fun addExpense(username: String, amount: Double, comment: String, time: Date, image:
     Bitmap? = null, thumbnail: Bitmap? = null) {
 
+        if (fbUser == null) {
+            Log.d(TAG, "Firebase user not authenticated")
+            return
+        }
+
         var imagePath: String? = null
         var thumbnailPath: String? = null
 
@@ -273,10 +290,10 @@ object Repository {
                     ".jpeg")
         }
 
-        val expense = Expense(fbUser.uid, username, amount, comment, time, imagePath,
+        val expense = Expense(fbUser!!.uid, username, amount, comment, time, imagePath,
                 thumbnailPath)
 
-        val userSharerInfo = DOC_EXPENSE_LIST_SHARER_INFO + "." + fbUser.uid
+        val userSharerInfo = DOC_EXPENSE_LIST_SHARER_INFO + "." + fbUser!!.uid
         val affectedListDocument = mDb.collection(COLLECTION_KEY_EXPENSE_LISTS)
                 .document(PreferenceUtils.selectedSharedExpenseListID)
         val expenseDocument = affectedListDocument.collection(COLLECTION_KEY_EXPENSE).document()
@@ -320,18 +337,18 @@ object Repository {
     private fun updateActiveExpenseList() {
         Log.d(TAG, "Active List changed, updating LiveData.")
         //TODO: cleanup old snapshotlisteners required?
+        if (PreferenceUtils.selectedSharedExpenseListID.isEmpty())
+            return
         mDb.collection(COLLECTION_KEY_EXPENSE_LISTS)
                 .document(PreferenceUtils.selectedSharedExpenseListID)
-            mDb.collection(COLLECTION_KEY_EXPENSE_LISTS)
-                    .document(PreferenceUtils.selectedSharedExpenseListID)
-                    .addSnapshotListener { snapshot, e ->
-                        if (e != null) {
-                            Log.w(TAG, "Listen failed.", e)
-                        } else if (snapshot != null && snapshot.exists()) {
-                            val list = snapshot.toObject(ExpenseList::class.java)
-                            activeExpenseList.postValue(list)
-                        }
+                .addSnapshotListener { snapshot, e ->
+                    if (e != null) {
+                        Log.w(TAG, "Listen failed.", e)
+                    } else if (snapshot != null && snapshot.exists()) {
+                        val list = snapshot.toObject(ExpenseList::class.java)
+                        activeExpenseList.postValue(list)
                     }
+                }
     }
 
 
