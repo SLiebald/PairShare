@@ -82,7 +82,6 @@ class MainActivity : AppCompatActivity() {
                             getString(R.string.warning_add_select_list),
                             Snackbar.LENGTH_LONG).show()
                     controller.navigate(R.id.selectExpenseList_dest)
-
                 }
             } else {
                 if (destination.id == R.id.about_dest || destination.id == R.id.addExpenseList_dest) {
@@ -100,7 +99,7 @@ class MainActivity : AppCompatActivity() {
             val expenseDiff = ExpenseListUtils.getExpenseDifferenceFor(mFirebaseAuth.uid!!,
                     expenseList)
 
-            val title = expenseList.listName!! + ": "
+            val title = "${expenseList.listName!!}: "
             val completeSummaryString = title + String.format(Locale.GERMAN, "%.2f€", expenseDiff)
 
             val spannable = SpannableString(completeSummaryString)

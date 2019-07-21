@@ -43,12 +43,12 @@
                 android:cursorVisible="false"
                 android:focusable="false"
                 android:focusableInTouchMode="false"
+                android:inputType="date"
                 android:textAlignment="center"
                 app:layout_constraintBottom_toBottomOf="@+id/tv_label_add_time"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/tv_label_add_time"
                 app:layout_constraintTop_toTopOf="@+id/tv_label_add_time"
-                android:inputType="date"
                 tools:text="24.Dec..." />
 
             <TextView
@@ -96,11 +96,11 @@
                 android:gravity="top|start"
                 android:hint="@string/hint_add_a_comment"
                 android:importantForAutofill="no"
+                android:inputType="textAutoCorrect"
                 android:scrollbars="vertical"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tv_label_add_comment"
-                android:inputType="textAutoCorrect"
                 tools:targetApi="o" />
 
             <Button
@@ -109,23 +109,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/bt_add_image"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/bt_add_expense"
+                app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/et_add_comment" />
 
-
-            <ImageView
-                android:id="@+id/iv_add_image"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="48dp"
-                android:layout_marginEnd="48dp"
-                android:adjustViewBounds="true"
-                android:contentDescription="@string/add_expense_content_description_add_an_image"
-                android:scaleType="fitCenter"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/bt_add_pic" />
 
             <Button
                 android:id="@+id/bt_add_expense"
@@ -134,8 +122,24 @@
                 android:layout_height="wrap_content"
                 android:text="@string/bt_add_expense"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/bt_add_pic"
+                app:layout_constraintTop_toBottomOf="@+id/et_add_comment" />
+
+            <ImageView
+                android:id="@+id/iv_add_image"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="48dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="48dp"
+                android:layout_marginBottom="24dp"
+                android:adjustViewBounds="true"
+                android:contentDescription="@string/add_expense_content_description_add_an_image"
+                android:scaleType="fitCenter"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/iv_add_image" />
+                app:layout_constraintTop_toBottomOf="@+id/bt_add_pic" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
