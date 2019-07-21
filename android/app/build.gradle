@@ -84,5 +84,9 @@ dependencies {
     implementation "androidx.core:core-ktx:1.0.2"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
+    // Dependencies for showing images in full screen
+    implementation 'com.github.chrisbanes:PhotoView:2.3.0'
+    implementation 'androidx.palette:palette:1.0.0'
+
 }
 

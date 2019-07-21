@@ -9,12 +9,14 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
-import com.sliebald.pairshare.MyApplication
+import com.sliebald.pairshare.MyApplication.Companion.context
 import com.sliebald.pairshare.R
 import com.sliebald.pairshare.data.models.Expense
+import com.sliebald.pairshare.ui.imagePopup.ImagePopup
 import com.sliebald.pairshare.utils.GlideApp
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 /**
  * [androidx.recyclerview.widget.RecyclerView.ViewHolder] class representing the
@@ -44,12 +46,12 @@ class ExpenseHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         // own expenses shifted to the right, others to the left.
         val params = mCardView.layoutParams as ViewGroup.MarginLayoutParams
         if (expense.userID == myId) {
-            mCardView.setCardBackgroundColor(MyApplication.context
+            mCardView.setCardBackgroundColor(context
                     .resources.getColor(R.color.balance_slight_positive, null))
             params.marginEnd = 15
             params.marginStart = 120
         } else {
-            mCardView.setCardBackgroundColor(MyApplication.context
+            mCardView.setCardBackgroundColor(context
                     .resources.getColor(R.color.balance_slight_negative, null))
             params.marginStart = 15
             params.marginEnd = 120
@@ -68,16 +70,22 @@ class ExpenseHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         if (expense.thumbnailPath != null) {
             val firebaseStorage = FirebaseStorage.getInstance()
             val thumbnailRef = firebaseStorage.reference.child(expense.thumbnailPath)
-            val progressDrawable = CircularProgressDrawable(MyApplication.context)
+            val progressDrawable = CircularProgressDrawable(context)
             progressDrawable.strokeWidth = 5f
             progressDrawable.centerRadius = 30f
             progressDrawable.start()
-            GlideApp.with(MyApplication.context)
+            GlideApp.with(context)
                     .load(thumbnailRef)
                     .placeholder(progressDrawable)
                     .into(mImageView)
         } else {
             mImageView.visibility = View.GONE
+        }
+
+        if (expense.imagePath != null) {
+            mCardView.setOnClickListener {
+                ImagePopup(context, R.layout.popup_image, it, FirebaseStorage.getInstance().reference.child(expense.imagePath!!), null)
+            }
         }
     }
 
