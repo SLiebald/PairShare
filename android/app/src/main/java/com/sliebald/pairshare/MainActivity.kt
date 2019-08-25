@@ -77,7 +77,8 @@ class MainActivity : AppCompatActivity() {
             //if no expenselist is selected, let them select or add one
             if (PreferenceUtils.selectedSharedExpenseListID.isEmpty()) {
                 mBinding.bottomNavView.visibility = View.GONE
-                if (!(destination.id == R.id.selectExpenseList_dest || destination.id == R.id.addExpenseList_dest)) {
+                if (!(destination.id == R.id.selectExpenseList_dest
+                                || destination.id == R.id.addExpenseList_dest)) {
                     Snackbar.make(mBinding.mainLayout.rootView,
                             getString(R.string.warning_add_select_list),
                             Snackbar.LENGTH_LONG).show()
@@ -90,6 +91,7 @@ class MainActivity : AppCompatActivity() {
                     mBinding.bottomNavView.visibility = View.VISIBLE
                 }
             }
+
         }
 
 
@@ -106,6 +108,7 @@ class MainActivity : AppCompatActivity() {
 
             spannable.setSpan(ForegroundColorSpan(ExpenseListUtils.getExpenseDifferenceColor(expenseDiff)), title.length,
                     completeSummaryString.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            mBinding.bottomNavView.visibility = View.VISIBLE
 
             mBinding.toolbar.subtitle = spannable
         })
@@ -167,7 +170,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        KeyboardUtils.hideKeyboard(this, mBinding.root)
+        KeyboardUtils.hideKeyboard(this, mBinding.mainLayout)
         return findNavController(R.id.my_nav_host_fragment).navigateUp(appBarConfiguration)
     }
 

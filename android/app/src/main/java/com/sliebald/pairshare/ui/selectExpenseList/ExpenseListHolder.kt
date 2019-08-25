@@ -29,10 +29,10 @@ class ExpenseListHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         setBalance(expenseList)
         mCardView.setOnClickListener { PreferenceUtils.selectedSharedExpenseListID = mListID }
 
-
-        PreferenceUtils.registerActiveListChangedListener(SharedPreferences.OnSharedPreferenceChangeListener { sharedPreferences, key ->
+        PreferenceUtils.registerActiveListChangedListener(SharedPreferences
+                .OnSharedPreferenceChangeListener { sharedPreferences, key ->
             if (key != null && key == PreferenceUtils.PREFERENCE_KEY_SELECTED_EXPENSE) {
-                val changedList = sharedPreferences.getString(PreferenceUtils.PREFERENCE_KEY_SELECTED_EXPENSE, "")
+                val changedList = sharedPreferences.getString(key, "")
                 if (changedList != null && changedList != mListID) {
                     setBackgroundColor(R.color.white)
                 } else {
