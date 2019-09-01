@@ -5,6 +5,9 @@ import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import com.sliebald.pairshare.MyApplication
 
+/**
+ * Helperclass for accessing [SharedPreferences].
+ */
 class PreferenceUtils {
 
     companion object {

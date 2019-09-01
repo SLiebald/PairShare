@@ -23,10 +23,10 @@ import java.io.ByteArrayOutputStream
 import java.util.*
 
 /**
- * Main Repository Class for Pairshare. Responsible for accessing firebase (especially firestore).
+ * Main Repository Class for Pairshare. Responsible for accessing firebase (especially firestore)
+ * from a single point of truth.
  */
 object Repository {
-
 
     /**
      * Interface for reporting results back to the caller. -1= error, 0=success
@@ -66,12 +66,10 @@ object Repository {
     // General fields (can occur in multiple objects
     private const val DOC_CREATED = "created"
 
-
     /**
      * Tag for logging.
      */
     private val TAG = Repository::class.java.simpleName
-
 
     /**
      * The currently logged in firebase user.
@@ -81,7 +79,6 @@ object Repository {
             return FirebaseAuth.getInstance().currentUser
         }
 
-
     /**
      * The currently logged in firebase user.
      */
@@ -90,6 +87,7 @@ object Repository {
             return Firebase.firestore
         }
 
+    //Keep current user as MutableLiveData, but expose him only as unmutable.
     private val _currentUser = MutableLiveData<User>()
     val currentUser: LiveData<User>
         get() = _currentUser
@@ -99,13 +97,13 @@ object Repository {
      */
     private val activeExpenseList: MutableLiveData<ExpenseList> = MutableLiveData()
 
-
+    /**
+     * Initialize the SharedPreference Listener to check when another List is selected to update
+     * the activeExpenseList viewmodel.
+     */
     init {
         PreferenceUtils.registerActiveListChangedListener(SharedPreferences.OnSharedPreferenceChangeListener { _, _ -> updateActiveExpenseList() })
     }
-
-
-
 
     /**
      * Creates a new entry for the currently logged in User in Firestore.
@@ -116,8 +114,6 @@ object Repository {
             Log.d(TAG, "FirebaseUser null (not authenticated)")
             return
         }
-
-
         val userName: String = if (fbUser!!.displayName != null && fbUser!!.displayName!!
                         .isNotEmpty())
             fbUser!!.displayName!!
@@ -133,8 +129,7 @@ object Repository {
         FirebaseInstanceId.getInstance().instanceId
                 .addOnSuccessListener { instanceIdResult ->
                     val token = instanceIdResult.token
-                    val user = User(fbUser!!.email!!.toLowerCase(), userName, token)
-
+                    val user = User(fbUser!!.email!!.toLowerCase(Locale.getDefault()), userName, token)
                     mDb.collection(COLLECTION_KEY_USERS).document(fbUser!!.uid).get()
                             .addOnCompleteListener { task ->
                                 if (task.isSuccessful) {
@@ -145,16 +140,18 @@ object Repository {
                                     } else if (document != null) {
                                         // If user already exists, update him if token differs.
                                         val userUpdate = document.toObject(User::class.java)
-                                        if (userUpdate != null && (userUpdate.fcmToken == null || userUpdate.fcmToken != token)) {
+                                        if (userUpdate != null && (userUpdate.fcmToken == null
+                                                        || userUpdate.fcmToken != token)) {
                                             userUpdate.fcmToken = token
                                             userUpdate.modified = Calendar.getInstance().time
-                                            mDb.collection(COLLECTION_KEY_USERS).document(fbUser!!.uid).set(userUpdate)
+                                            mDb.collection(COLLECTION_KEY_USERS)
+                                                    .document(fbUser!!.uid)
+                                                    .set(userUpdate)
                                         }
                                     }
                                 }
                             }
                 }
-
         // update the current user livedata
         mDb.collection(COLLECTION_KEY_USERS)
                 .document(fbUser!!.uid)
@@ -269,17 +266,19 @@ object Repository {
      * Adds the given expense to the currently selected List. Adds the ID of the currently logged
      * in user to the logged expense.
      *
+     * @param username Name of the user that added the expense
+     * @param amount Amount of the expense.
+     * @param comment Optional comment describing the expense
+     * @param time [Date] when the expense took place (can be different from the time logging it)
      * @param image The image to add to the expense
      * @param thumbnail The thumbnail to add to the expense.
      */
     fun addExpense(username: String, amount: Double, comment: String, time: Date, image:
     Bitmap? = null, thumbnail: Bitmap? = null) {
-
         if (fbUser == null) {
             Log.d(TAG, "Firebase user not authenticated")
             return
         }
-
         var imagePath: String? = null
         var thumbnailPath: String? = null
 
@@ -288,15 +287,12 @@ object Repository {
             thumbnailPath = uploadImage(thumbnail, "thumbnails/" + UUID.randomUUID().toString() +
                     ".jpeg")
         }
-
         val expense = Expense(fbUser!!.uid, username, amount, comment, time, imagePath,
                 thumbnailPath)
-
         val userSharerInfo = DOC_EXPENSE_LIST_SHARER_INFO + "." + fbUser!!.uid
         val affectedListDocument = mDb.collection(COLLECTION_KEY_EXPENSE_LISTS)
                 .document(PreferenceUtils.selectedSharedExpenseListID)
         val expenseDocument = affectedListDocument.collection(COLLECTION_KEY_EXPENSE).document()
-
         // add the new expense and update the counters in the parent list as batch operation
         // Using increment operation avoids inconsistencies in case of multiple users adding
         // expenses at the same time.
@@ -314,7 +310,8 @@ object Repository {
     /**
      * [android.content.SharedPreferences.OnSharedPreferenceChangeListener] for updating
      * the livedata if another list was selected. Cannot be a local variable, as it might get
-     * garbage collected in that case. TODO: check if it works with kotlin
+     * garbage collected in that case.
+     * TODO: from java time, check if it works with kotlin
      */
     //private var onPrefChangeListener: SharedPreferences.OnSharedPreferenceChangeListener? = null
 
@@ -349,6 +346,4 @@ object Repository {
                     }
                 }
     }
-
-
 }

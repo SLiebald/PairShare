@@ -30,6 +30,9 @@ class SelectExpenseListFragment : Fragment() {
      */
     private lateinit var expenseListsAdapter: FirestoreRecyclerAdapter<*, *>
 
+    /**
+     * Access to the mainViewModel to observe when the user changes.
+     */
     private val mViewModelMain: MainActivityViewModel by activityViewModels()
 
 
@@ -43,29 +46,31 @@ class SelectExpenseListFragment : Fragment() {
         // Inflate the layout for this fragment
         mBinding = DataBindingUtil.inflate(inflater, R.layout
                 .fragment_select_expense_list, container, false)
-        mBinding.fab.setOnClickListener(Navigation.createNavigateOnClickListener(R.id.action_selectExpense_dest_to_addExpenseListFragment))
+        // Setup navigation for fab button to create new expenses.
+        mBinding.fab.setOnClickListener(Navigation.createNavigateOnClickListener(
+                R.id.action_selectExpense_dest_to_addExpenseListFragment))
         return mBinding.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
         mBinding.rvActiveLists.layoutManager = LinearLayoutManager(context)
-
+        initAdapter()
         mViewModelMain.user.observe(this, Observer<User> {
             Log.d(TAG, "User changed")
             initAdapter()
         })
     }
 
+    /**
+     * Initialize the [FirestoreRecyclerAdapter] that shows available [ExpenseList]s
+     */
     private fun initAdapter() {
         val query = Repository.getExpenseListsQuery()
-
         val options = FirestoreRecyclerOptions.Builder<ExpenseList>()
                 .setQuery(query, ExpenseList::class.java)
                 .setLifecycleOwner(viewLifecycleOwner)
                 .build()
-
         expenseListsAdapter = object : FirestoreRecyclerAdapter<ExpenseList, ExpenseListHolder>(options) {
             public override fun onBindViewHolder(holder: ExpenseListHolder, position: Int,
                                                  expenseList: ExpenseList) {
@@ -81,11 +86,9 @@ class SelectExpenseListFragment : Fragment() {
         }
         mBinding.rvActiveLists.adapter = expenseListsAdapter
         expenseListsAdapter.notifyDataSetChanged()
-
     }
 
     companion object {
-
         /**
          * Tag for logging.
          */

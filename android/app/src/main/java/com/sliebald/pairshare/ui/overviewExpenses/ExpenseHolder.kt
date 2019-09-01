@@ -88,6 +88,4 @@ class ExpenseHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             }
         }
     }
-
-
 }

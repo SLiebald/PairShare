@@ -209,6 +209,4 @@ class AddExpenseFragment : Fragment() {
          */
         private const val REQUEST_TAKE_PICTURE = 6433
     }
-
-
 }

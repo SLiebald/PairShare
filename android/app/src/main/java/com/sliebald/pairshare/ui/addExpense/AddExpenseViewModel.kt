@@ -50,7 +50,6 @@ class AddExpenseViewModel : ViewModel() {
         }
     }
 
-
     /**
      * Add an expense to the currently selected list.
      *

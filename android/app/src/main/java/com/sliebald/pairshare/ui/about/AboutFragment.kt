@@ -1,6 +1,5 @@
 package com.sliebald.pairshare.ui.about
 
-
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,12 +9,10 @@ import androidx.fragment.app.Fragment
 
 import com.sliebald.pairshare.R
 
-
 /**
  * Fragment for displaying general information about the App.
  */
 class AboutFragment : Fragment() {
-
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {

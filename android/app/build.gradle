@@ -57,13 +57,12 @@ dependencies {
     implementation 'net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:2.3.0'
 
     // firebase
-    implementation 'com.google.firebase:firebase-core:17.1.0'
+    implementation 'com.google.firebase:firebase-core:17.2.0'
     // firebase authentication
     implementation 'com.google.firebase:firebase-auth:19.0.0'
     // firestore database
     implementation 'com.google.firebase:firebase-firestore-ktx:21.0.0'
     implementation 'com.google.firebase:firebase-storage:19.0.0'
-
 
     // firebase ui
     // https://github.com/firebase/FirebaseUI-Android
@@ -93,6 +92,9 @@ dependencies {
     // https://github.com/chrisbanes/PhotoView
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
     implementation 'androidx.palette:palette:1.0.0'
+
+    implementation 'androidx.exifinterface:exifinterface:1.1.0-beta01'
+
 
 }
 

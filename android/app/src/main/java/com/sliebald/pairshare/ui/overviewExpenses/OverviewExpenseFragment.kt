@@ -37,7 +37,6 @@ class OverviewExpenseFragment : Fragment() {
 
     private val mViewModelMain: MainActivityViewModel by activityViewModels()
 
-
     /**
      * Paging adapter used for displaying (the latest) expenses with a recyclerview.
      */
@@ -52,7 +51,6 @@ class OverviewExpenseFragment : Fragment() {
                 .fragment_overview_expense, container, false)
         return mBinding.root
     }
-
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -109,10 +107,6 @@ class OverviewExpenseFragment : Fragment() {
             }
             mViewModelMain.user.observe(this, obs)
             mViewModelMain.user.removeObserver(obs)
-
         })
-
     }
-
-
 }

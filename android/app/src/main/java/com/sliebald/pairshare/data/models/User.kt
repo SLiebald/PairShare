@@ -13,6 +13,7 @@ import java.util.*
  * @param modified Time the [User] was last modified.
  * @constructor Creates a new [User]
  */
+// TODO: Firebase requires an empty constructor, is there a way to make mail nonNull?
 data class User(
         val mail: String? = null,
         var username: String = "unknown",

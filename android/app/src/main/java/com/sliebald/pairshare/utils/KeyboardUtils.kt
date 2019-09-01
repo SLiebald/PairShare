@@ -5,6 +5,9 @@ import android.content.Context
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 
+/**
+ * Helperclass to hide/view the keyboard.
+ */
 object KeyboardUtils {
 
     /**

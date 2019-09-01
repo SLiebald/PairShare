@@ -29,13 +29,33 @@ import com.sliebald.pairshare.utils.PreferenceUtils
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
 import java.util.*
 
+/**
+ * Main Activity of Pairshare, serves as host for all fragments and takes care of proper navigation
+ */
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
+
+    /**
+     * Firebase Authentication instance for users authentication.
+     */
     private val mFirebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
+
+    /**
+     * State Listener to make sure the app reacts correctly to authentication state changes (e.g.
+     * login/logout).
+     */
     private lateinit var authStateListener: FirebaseAuth.AuthStateListener
+
+    /**
+     * ViewModel of Mainactivity. Manages all state that should be shared between all activities,
+     * e.g. expense summary of currently selected expense list for the top bar.
+     */
     private val mViewModel: MainActivityViewModel by viewModels()
 
+    /**
+     * Databinding of layout of this activity. Allows easy access to layout elements.
+     */
     private lateinit var mBinding: ActivityMainBinding
 
 
@@ -45,11 +65,15 @@ class MainActivity : AppCompatActivity() {
 
         // setContentView(R.layout.activity_main);
 
-        //Log user in if he isn't already logged in.
+
+        // Create the AuthStateListener for reacting to authentication changes.
+        // Called on each auth change.
         authStateListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
             val firebaseUser = firebaseAuth.currentUser
+            // if no user is logged in (or just logged out), open the authentication activity.
             if (firebaseUser == null) {
-                val providers = listOf(AuthUI.IdpConfig.EmailBuilder().build(), AuthUI.IdpConfig.GoogleBuilder().build())
+                val providers = listOf(AuthUI.IdpConfig.EmailBuilder().build(),
+                        AuthUI.IdpConfig.GoogleBuilder().build())
                 startActivityForResult(
                         AuthUI.getInstance()
                                 .createSignInIntentBuilder()
@@ -58,13 +82,13 @@ class MainActivity : AppCompatActivity() {
                         RC_SIGN_IN)
             }
         }
-        // set addEntry and summary as tld destinations --> no back button
+
+        // setup proper navigation
         val host: NavHostFragment = supportFragmentManager
                 .findFragmentById(R.id.my_nav_host_fragment) as NavHostFragment? ?: return
         val navController = host.navController
 
-
-
+        // set addEntry and summary as tld destinations --> no back button on those framents
         appBarConfiguration = AppBarConfiguration.Builder(setOf(R.id.addExpense_dest, R.id
                 .overviewExpenses_dest, R.id.selectExpenseList_dest))
                 .build()
@@ -74,7 +98,7 @@ class MainActivity : AppCompatActivity() {
         // Make some extra checks which destination changes are currently allowed and handle
         // bottom navigation visibility.
         navController.addOnDestinationChangedListener { controller, destination, _ ->
-            //if no expenselist is selected, let them select or add one
+            // if no expenselist is selected, let them select or add one
             if (PreferenceUtils.selectedSharedExpenseListID.isEmpty()) {
                 mBinding.bottomNavView.visibility = View.GONE
                 if (!(destination.id == R.id.selectExpenseList_dest
@@ -95,21 +119,17 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        //Get the current expense diff for the subtitle in all fragments
-
+        // Get the current expense diff for the subtitle in all fragments. Livedata makes sure
+        // changes are reflected (e.g. added expense, changed list).
         mViewModel.activeExpenseList.observe(this, Observer { expenseList ->
             val expenseDiff = ExpenseListUtils.getExpenseDifferenceFor(mFirebaseAuth.uid!!,
                     expenseList)
-
             val title = "${expenseList.listName!!}: "
             val completeSummaryString = title + String.format(Locale.GERMAN, "%.2f€", expenseDiff)
-
             val spannable = SpannableString(completeSummaryString)
-
             spannable.setSpan(ForegroundColorSpan(ExpenseListUtils.getExpenseDifferenceColor(expenseDiff)), title.length,
                     completeSummaryString.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
             mBinding.bottomNavView.visibility = View.VISIBLE
-
             mBinding.toolbar.subtitle = spannable
         })
     }
@@ -117,9 +137,9 @@ class MainActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
+        // make sure the authentication process was properly finished.
         if (requestCode == RC_SIGN_IN) {
             val response = IdpResponse.fromResultIntent(data)
-
             if (response == null) {
                 //TODO: according to the documentation this should happen if back is pressed in
                 // the login activity. But it doesn't seem to work (emulator)
@@ -127,12 +147,9 @@ class MainActivity : AppCompatActivity() {
                 // finish is called once a login is successful
                 finish()
             }
-
             if (resultCode == RESULT_OK) {
                 mViewModel.userLoggedIn()
             }
-
-
         }
     }
 
@@ -210,8 +227,4 @@ class MainActivity : AppCompatActivity() {
          */
         private const val RC_SIGN_IN = 53252
     }
-
-
 }
-
-

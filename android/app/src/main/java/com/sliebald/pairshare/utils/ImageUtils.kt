@@ -3,8 +3,8 @@ package com.sliebald.pairshare.utils
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.media.ExifInterface
 import android.net.Uri
+import androidx.exifinterface.media.ExifInterface
 import com.bumptech.glide.load.resource.bitmap.TransformationUtils.rotateImage
 import kotlin.math.roundToInt
 
@@ -16,6 +16,15 @@ import kotlin.math.roundToInt
  */
 object ImageUtils {
 
+    /**
+     * Loads an image from the given uri (describing the images location as file) and reduces its
+     * size to the given maxSize. Will never increase the size of the image.
+     *
+     * @param uri The URI to load the Image from the file system.
+     * @param maxSize The maximum width/height the image is allowed to have.
+     * @param context Context required to load the image.
+     * @return The resized image as bitmap
+     */
     fun getResizedBitmap(uri: Uri, maxSize: Int, context: Context): Bitmap {
         val options = BitmapFactory.Options()
         options.inJustDecodeBounds = true
@@ -66,21 +75,25 @@ object ImageUtils {
         return inSampleSize
     }
 
+    /**
+     * Some cameras rotate the image. Make sure the rotation is correct.
+     *
+     * @param uri The URI to load the Image exif information from the file system.
+     * @param img The image to manipulate (cannot directly manipulate the read image).
+     * @param context Context required to load the image exif info from the filesystem.
+     */
     private fun rotateImageIfRequired(context: Context, img: Bitmap, uri: Uri): Bitmap {
-
         val input = context.contentResolver.openInputStream(uri)
-        val ei = ExifInterface(input)
+        val ei = ExifInterface(input!!)
 
-        return when (ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)) {
+        val result = when (ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface
+                .ORIENTATION_NORMAL)) {
             ExifInterface.ORIENTATION_ROTATE_90 -> rotateImage(img, 90)
             ExifInterface.ORIENTATION_ROTATE_180 -> rotateImage(img, 180)
             ExifInterface.ORIENTATION_ROTATE_270 -> rotateImage(img, 270)
             else -> img
         }
+        input.close()
+        return result
     }
-
-
-
-
-
 }

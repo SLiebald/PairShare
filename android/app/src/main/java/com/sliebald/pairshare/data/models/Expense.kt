@@ -17,6 +17,7 @@ import java.util.*
  * @param created  Time the [Expense] was added. Can be different from the [timeOfExpense].
  * @constructor Creates a new [Expense]
  */
+// TODO: Firebase requires an empty constructor, is there a way to make params non null where possible?
 data class Expense(
         val userID: String? = null,
         val userName: String? = null,
@@ -25,6 +26,5 @@ data class Expense(
         val timeOfExpense: Date? = null,
         val imagePath: String? = null,
         val thumbnailPath: String? = null,
-        @ServerTimestamp
-        val created: Date? = null
+        @ServerTimestamp val created: Date? = null
 )

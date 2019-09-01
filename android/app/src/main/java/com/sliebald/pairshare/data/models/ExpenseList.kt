@@ -15,6 +15,7 @@ import java.util.*
  * @param modified Time the [ExpenseList] was last modified (e.g. changed the sharerInfo).
  * @constructor Creates a new [ExpenseList]
  */
+// TODO: Firebase requires an empty constructor, is there a way to make name/sharers/info nonNull?
 data class ExpenseList(
         val listName: String? = null,
         val sharers: List<String>? = null,

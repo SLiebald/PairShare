@@ -14,8 +14,10 @@ import com.sliebald.pairshare.R
 import com.sliebald.pairshare.databinding.FragmentAddExpenseListBinding
 import com.sliebald.pairshare.utils.KeyboardUtils
 
+/**
+ * Fragment responsible for displaying an UI that allows adding new ExpenseLists
+ */
 class AddExpenseListFragment : Fragment() {
-
 
     private val mViewModel: AddExpenseListViewModel by viewModels()
 
@@ -55,6 +57,5 @@ class AddExpenseListFragment : Fragment() {
                 findNavController().navigateUp()
             }
         })
-
     }
 }
