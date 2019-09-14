@@ -55,10 +55,9 @@ class SelectExpenseListFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         mBinding.rvActiveLists.layoutManager = LinearLayoutManager(context)
-        initAdapter()
         mViewModelMain.user.observe(this, Observer<User> {
             Log.d(TAG, "User changed")
-            initAdapter()
+            if (it != null) initAdapter()
         })
     }
 

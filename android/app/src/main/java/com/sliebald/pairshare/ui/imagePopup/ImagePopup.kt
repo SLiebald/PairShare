@@ -27,7 +27,7 @@ import com.sliebald.pairshare.utils.GlideApp
 
 // adapted from http://www.tutorialsface.com/2017/10/whatsapp-like-full-screen-imageview-android-with-zoom-blur-bg-in-popup-window-example-tutorial/
 
-class ImagePopup(mContext: Context, layout: Int, v: View, imageRef: StorageReference, bitmap:
+class ImagePopup(mContext: Context, v: View, imageRef: StorageReference, bitmap:
 Bitmap?) : PopupWindow((mContext.getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater)
         .inflate(R.layout.popup_image, null), MATCH_PARENT, MATCH_PARENT) {
 

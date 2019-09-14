@@ -84,7 +84,7 @@ class ExpenseHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         if (expense.imagePath != null) {
             mCardView.setOnClickListener {
-                ImagePopup(context, R.layout.popup_image, it, FirebaseStorage.getInstance().reference.child(expense.imagePath), null)
+                ImagePopup(context, it, FirebaseStorage.getInstance().reference.child(expense.imagePath), null)
             }
         }
     }
