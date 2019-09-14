@@ -9,10 +9,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.5.0'
-        // TODO newer version show a warning regarding variant.getMergeResources() being obsolated
-        // by variant.getMergeResourcesProvider(), likely caused by a library? Couldn't debug at
-        // time, therefore staying with 4.2.0 until a fix is found.
-        classpath 'com.google.gms:google-services:4.2.0'
+        classpath 'com.google.gms:google-services:4.3.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
